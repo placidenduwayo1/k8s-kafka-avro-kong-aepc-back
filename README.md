@@ -119,12 +119,10 @@ kong-api-gateway url: **http://localhost:8002/**
 
   ## address-microservice
 
-list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-address:
-
+list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-address:  
   - [GET]```http://localhost:8002/address-api/```  
   - [POST]```http://localhost:8002/addresses```    
-    ***payload***:
-
+    ***payload***:  
       ```
       {
         num:int value
@@ -133,16 +131,13 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-address:
         city: string value
         coutry: string value
       }
-      ```
-  
-    - [GET]```http://http://localhost:8002/address-api/addresses```  
-    - [GET]```http://http://localhost:8002/address-api/addresses/id/{value of address id}```  
-    - [DELETE]```http://http://localhost:8002/address-api/addresses/id/{value of address id}```  
+      ```  
+    - [GET]```http://localhost:8002/address-api/addresses```  
+    - [GET]```http://localhost:8002/address-api/addresses/id/{value of address id}```  
+    - [DELETE]```http://localhost:8002/address-api/addresses/id/{value of address id}```  
     **Note**: address cannot be removed when it is aleardy assigned  employee or company   
-    - [PUT]```http://http://localhost:8002/address-api/addresses/id/{value of address id}```  
-
-      ***payload***:
-        
+    - [PUT]```http://localhost:8002/address-api/addresses/id/{value of address id}```  
+      ***payload***:  
         ```
         {
           num:int value
