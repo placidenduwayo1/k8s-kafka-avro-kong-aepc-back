@@ -47,7 +47,6 @@ public class CompanyUseCase implements InputCompanyService, InputRemoteAddressSe
             throw new RemoteApiAddressNotLoadedException(address.toString());
         }
     }
-
     private void checkCompanyAlreadyExists(CompanyDto dto) throws CompanyAlreadyExistsException {
         if (!loadCompanyByInfo(dto.getName(), dto.getAgency(), dto.getType()).isEmpty()) {
             throw new CompanyAlreadyExistsException();
