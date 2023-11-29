@@ -81,7 +81,8 @@
   - k8s-kafka-avro-kong-bs-ms-project
  
 ### summary (CI-DC)
-![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/e7e0898b-79d7-4786-a1c5-3197e0438b39)
+![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/dcf3f67e-4330-4563-91d5-947703e92ade)
+
     
 ## architecture kafka inside business microservice
 - a model is a java bean that is sent as payload using a REST api, 
@@ -99,7 +100,8 @@
 - after events serialized, kafka producer send them into kafka topics.
 
 # global architecture of the project
-![k8s-kafka-avro-kong-clean-archi](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/7fed9f8a-e7c3-4d22-8331-ca736ec4d338)
+![k8s-kafka-avro-kong-clean-archi](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/4107499e-7894-4240-998c-b2c8e144751d)
+
 
 - To access to backend business microservices, the client goes through a ***kong-api-gateway***
 
