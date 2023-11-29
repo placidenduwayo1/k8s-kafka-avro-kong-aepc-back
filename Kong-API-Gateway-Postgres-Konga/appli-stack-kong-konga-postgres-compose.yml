@@ -1,0 +1,428 @@
+version: '3.8'
+services:
+#################################
+  #mysql: microservices database
+#################################
+  mysql-ms-dbs:
+    image: mysql:8.0
+    container_name: mysql-ms-dbs
+    restart: always
+    ports:
+      - "3307:3306"
+    networks:
+      - kong-kafka-net
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost", "-uroot", "-proot" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - bs-ms-persistence-dbs:/var/lib/mysql
+###########################
+  # kafka infrastructure
+###########################
+  zookeeper:
+    image: zookeeper:3.4.9
+    container_name: zookeeper
+    hostname: zookeeper
+    restart: always
+    ports:
+      - "2181:2181"
+    networks:
+      - kong-kafka-net
+    healthcheck:
+      test: nc -z localhost 2181 || exit -1
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  kafka-broker-1:
+    image: obsidiandynamics/kafka
+    container_name: kafka-broker-1
+    networks:
+      - kong-kafka-net
+    ports:
+      - "9092:9092"
+      - "19092:19092"
+    environment:
+      KAFKA_BROKER_ID: 0
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9092,PLAINTEXT_HOST://0.0.0.0:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-1:9092,PLAINTEXT_HOST://localhost:19092
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: nc -z localhost 9092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  kafka-broker-2:
+    image: obsidiandynamics/kafka
+    container_name: kafka-broker-2
+    networks:
+      - kong-kafka-net
+    ports:
+      - "9093:9093"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9093,PLAINTEXT_HOST://0.0.0.0:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-2:9093,PLAINTEXT_HOST://localhost:29092
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: nc -z localhost 9093 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  kafka-broker-3:
+    image: obsidiandynamics/kafka
+    container_name: kafka-broker-3
+    networks:
+      - kong-kafka-net
+    ports:
+      - "9094:9094"
+      - "39092:39092"
+    environment:
+      KAFKA_BROKER_ID: 2
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ALLOW_PLAINTEXT_LISTENER: yes
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:9094,PLAINTEXT_HOST://0.0.0.0:39092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka-broker-3:9094,PLAINTEXT_HOST://localhost:39092
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    healthcheck:
+      test: nc -z localhost 9094 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 10
+############################################
+  # schema registry for avro serialization
+#############################################
+  schema-registry-service:
+    image: confluentinc/cp-schema-registry:5.4.0
+    hostname: schema-registry
+    container_name: schema-registry-service
+    depends_on:
+      kafka-broker-1:
+        condition: service_healthy
+      kafka-broker-2:
+        condition: service_healthy
+      kafka-broker-3:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry-service
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: kafka-broker-1:9092,kafka-broker-2:9093,kafka-broker-3:9094
+    networks:
+      - kong-kafka-net
+    
+  kafdrop-UI:
+    image: obsidiandynamics/kafdrop
+    container_name: kafdrop-UI
+    restart: "no"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: kafka-broker-1:9092,kafka-broker-2:9093,kafka-broker-3:9094
+    depends_on:
+      kafka-broker-1:
+        condition: service_healthy
+      kafka-broker-2:
+        condition: service_healthy
+      kafka-broker-3:
+        condition: service_healthy
+    networks:
+      - kong-kafka-net
+
+##############################
+  # configuration server
+##############################
+  kong-microservices-config-service:
+    image: placidenduwayo1/kong-microservices-config-service:1.0.0
+    container_name: kong-microservices-config-service
+    hostname: kong-microservices-config-service
+    build:
+      context: ../AEPC-Ms-Config-Service/kong-microservices-config-service
+      dockerfile: Dockerfile
+    ports:
+      - "8280:8280"
+    healthcheck:
+      test: [ "CMD", "curl", "-I", "http://kong-microservices-config-service:8280" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - kong-kafka-net
+
+##############################
+  # business microservices
+##############################
+  k8s-kafka-avro-kong-bs-ms-address:
+    image: placidenduwayo1/k8s-kafka-avro-kong-bs-ms-address:1.0.0
+    hostname: k8s-kafka-avro-kong-bs-ms-address
+    container_name: k8s-kafka-avro-kong-bs-ms-address
+    build:
+      context: ../AEPC-Bs-Ms-Backend/k8s-kafka-avro-kong-clean-archi-bs-ms-address
+      dockerfile: Dockerfile
+    ports:
+      - "8681:8681"
+    networks:
+      - kong-kafka-net
+    depends_on:
+      kong-microservices-config-service:
+        condition: service_healthy
+      mysql-ms-dbs:
+        condition: service_healthy
+      kafka-broker-1:
+        condition: service_healthy
+      kafka-broker-2:
+        condition: service_healthy
+      kafka-broker-3:
+        condition: service_healthy
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker-1:9092,kafka-broker-2:9093,kafka-broker-3:9094
+    healthcheck:
+      test: ["CMD","curl","-I","http://k8s-kafka-avro-kong-bs-ms-address:8681"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+  k8s-kafka-avro-kong-bs-ms-company:
+    image: placidenduwayo1/k8s-kafka-avro-kong-bs-ms-company:1.0.0
+    hostname: bs-ms-company
+    container_name: k8s-kafka-avro-kong-bs-ms-company
+    build:
+      context: ../AEPC-Bs-Ms-Backend/k8s-kafka-avro-kong-clean-archi-bs-ms-company
+      dockerfile: Dockerfile
+    ports:
+      - "8682:8682"
+    networks:
+      - kong-kafka-net
+    depends_on:
+      kong-microservices-config-service:
+        condition: service_healthy
+      mysql-ms-dbs:
+        condition: service_healthy
+      kafka-broker-1:
+        condition: service_healthy
+      kafka-broker-2:
+        condition: service_healthy
+      kafka-broker-3:
+        condition: service_healthy
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker-1:9092,kafka-broker-2:9093,kafka-broker-3:9094
+    healthcheck:
+      test: [ "CMD","curl","-I","http://k8s-kafka-avro-kong-bs-ms-company:8682" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+  k8s-kafka-avro-kong-bs-ms-employee:
+    hostname: bs-ms-employee
+    image: placidenduwayo1/k8s-kafka-avro-kong-bs-ms-employee:1.0.0
+    container_name: k8s-kafka-avro-kong-bs-ms-employee
+    build:
+      context: ../AEPC-Bs-Ms-Backend/k8s-kafka-avro-kong-clean-archi-bs-ms-employee
+      dockerfile: Dockerfile
+    ports:
+      - "8683:8683"
+    networks:
+      - kong-kafka-net
+    depends_on:
+      kong-microservices-config-service:
+        condition: service_healthy
+      mysql-ms-dbs:
+        condition: service_healthy
+      kafka-broker-1:
+        condition: service_healthy
+      kafka-broker-2:
+        condition: service_healthy
+      kafka-broker-3:
+        condition: service_healthy
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker-1:9092,kafka-broker-2:9093,kafka-broker-3:9094
+    healthcheck:
+      test: [ "CMD","curl","-I","http://k8s-kafka-avro-kong-bs-ms-employee:8683" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+  
+  k8s-kafka-avro-kong-bs-ms-project:
+    hostname: bs-ms-project
+    image: placidenduwayo1/k8s-kafka-avro-kong-bs-ms-project:1.0.0
+    container_name: k8s-kafka-avro-kong-bs-ms-project
+    build:
+      context: ../AEPC-Bs-Ms-Backend/k8s-kafka-avro-kong-clean-archi-bs-ms-project
+      dockerfile: Dockerfile
+    ports:
+      - "8684:8684"
+    networks:
+      - kong-kafka-net
+    depends_on:
+      kong-microservices-config-service:
+        condition: service_healthy
+      mysql-ms-dbs:
+        condition: service_healthy
+      kafka-broker-1:
+        condition: service_healthy
+      kafka-broker-2:
+        condition: service_healthy
+      kafka-broker-3:
+        condition: service_healthy
+    environment:
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka-broker-1:9092,kafka-broker-2:9093,kafka-broker-3:9094
+    healthcheck:
+      test: [ "CMD","curl","-I","http://k8s-kafka-avro-kong-bs-ms-project:8684" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+###########################################################################################
+# kong infrastructure: kong api db: postgres + kong migration + kong-api-gateway + konga-ui
+###########################################################################################
+  # postgres db
+  kong-api-database:
+    image: postgres:9.6-alpine
+    container_name: kong-api-database
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: kong
+      POSTGRES_PASSWORD: kong
+      POSTGRES_DB: kong
+    networks:
+      - kong-kafka-net
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - kong-configs-persistence-db:/var/lib/postgresql/data
+
+  # kong db preparation
+  kong-db-prepare:
+    image: kong:alpine
+    container_name: kong-db-prepare
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-api-database
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+    networks:
+      - kong-kafka-net
+    depends_on:
+      kong-api-database:
+        condition: service_healthy
+    command:
+    - sh
+    - -c
+    - |
+      kong migrations bootstrap
+      echo "database is up to date and we can start kong api gateway"
+      echo "!!!!DATABASE PREPARATION DONE!!!"
+
+ # kong-api-gateway service
+  kong-api-gateway:
+    hostname: kong-api-gateway
+    container_name: kong-api-gateway
+    image: kong:alpine
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: kong-api-database
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PROXY_ACCESS_LOG: "/dev/stdout"
+      KONG_ADMIN_ACCESS_LOG: "/dev/stdout"
+      KONG_PROXY_ERROR_LOG: "/dev/stderr"
+      KONG_ADMIN_ERROR_LOG: "/dev/stderr"
+      KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
+    ports:
+      - "8002:8000"
+      - "8001:8001"
+      - "8443:8443"
+      - "8444:8444"
+    volumes:
+      - ../Logs/logs-file.log:/opt/logs-file.log
+    networks:
+      - kong-kafka-net
+    healthcheck:
+      test: [ "CMD","kong","health" ]
+      interval: 10s
+      retries: 5
+      timeout: 10s
+    # kong-gateway must wait all microservices to start in order to add their dns
+    depends_on:
+      kong-api-database:
+        condition: service_healthy
+      kong-microservices-config-service:
+        condition: service_healthy
+      k8s-kafka-avro-kong-bs-ms-address:
+        condition: service_healthy
+      k8s-kafka-avro-kong-bs-ms-company:
+        condition: service_healthy
+      k8s-kafka-avro-kong-bs-ms-employee:
+        condition: service_healthy
+      k8s-kafka-avro-kong-bs-ms-project:
+        condition: service_healthy
+
+  # konga db preparation
+  konga-db-prepare:
+    container_name: konga-db-prepare
+    image: pantsel/konga
+    command: '-c prepare -a postgres -u postgresql://kong:kong@kong-api-database:5432/konga_db &&
+      echo "KONGA DB PREPARATION PHASE" &&
+      echo "KONGA DB PREP DONE"'
+
+    networks:
+      - kong-kafka-net
+    depends_on:
+      kong-api-database:
+        condition: service_healthy
+  # konga dashboard to manage kong objects
+  konga-dashboard:
+    container_name: konga-dashboard
+    hostname: konga-dashboard
+    image: pantsel/konga
+    ports:
+      - "8686:1337"
+    networks:
+      - kong-kafka-net
+    depends_on:
+      kong-api-gateway:
+        condition: service_healthy
+    environment:
+      DB_ADAPTER: postgres
+      DB_HOST: kong-api-database
+      DB_USER: kong
+      DB_PASSWORD: kong
+      DB_DATABASE: konga_db
+      NODE_ENV: development
+
+networks:
+  kong-kafka-net:
+volumes:
+  bs-ms-persistence-dbs:
+  kong-configs-persistence-db:
