@@ -53,6 +53,14 @@ public class CompanyUseCase implements InputCompanyService, InputRemoteAddressSe
         }
     }
 
+    private void checkAddressAlreadyHoldsCompany(List<Company> companies, String addressId) throws RemoteAddressAlreadyHoldsCompanyException {
+        List<String> addressesIds = new ArrayList<>();
+        companies.forEach(company -> addressesIds.add(company.getAddressId()));
+        if(addressesIds.contains(addressId)){
+            throw new RemoteAddressAlreadyHoldsCompanyException();
+        }
+    }
+
     private void setCompanyDependency(Company company, String addressId) throws RemoteApiAddressNotLoadedException {
         Address address = getRemoteAddressById(addressId);
         company.setAddressId(addressId);
@@ -61,10 +69,13 @@ public class CompanyUseCase implements InputCompanyService, InputRemoteAddressSe
 
     @Override
     public Company produceKafkaEventCompanyCreate(CompanyDto dto) throws CompanyTypeInvalidException, CompanyEmptyFieldsException,
-            CompanyAlreadyExistsException, RemoteApiAddressNotLoadedException{
+            CompanyAlreadyExistsException, RemoteApiAddressNotLoadedException, RemoteAddressAlreadyHoldsCompanyException {
         Validator.format(dto);
         checkPayloadValidity(dto);
         checkCompanyAlreadyExists(dto);
+
+        checkAddressAlreadyHoldsCompany(loadAllCompanies(),dto.getAddressId());
+
         Company bean = CompanyMapper.fromDtoToBean(dto);
         bean.setCompanyId(UUID.randomUUID().toString());
         bean.setConnectedDate(Timestamp.from(Instant.now()).toString());
@@ -136,12 +147,21 @@ public class CompanyUseCase implements InputCompanyService, InputRemoteAddressSe
         return "Company <" + company + "> successfully deleted";
     }
 
+    private List<String> loadAddressesIds(List<Company>  companies){
+        List<String> addressesIDs = new ArrayList<>();
+        companies.forEach(company -> addressesIDs.add(company.getAddressId()));
+        return addressesIDs;
+    }
     @Override
     public Company produceKafkaEventCompanyEdit(CompanyDto payload, String id) throws CompanyNotFoundException,
-            CompanyTypeInvalidException, CompanyEmptyFieldsException, RemoteApiAddressNotLoadedException {
+            CompanyTypeInvalidException, CompanyEmptyFieldsException, RemoteApiAddressNotLoadedException, RemoteAddressAlreadyHoldsCompanyException {
         Validator.format(payload);
         checkPayloadValidity(payload);
         Company company = getCompanyById(id).orElseThrow(CompanyNotFoundException::new);
+        List<String> addressesIDs = loadAddressesIds(loadAllCompanies());
+        if(addressesIDs.contains(payload.getAddressId()) && !company.getAddressId().equals(payload.getAddressId())){
+            throw new RemoteAddressAlreadyHoldsCompanyException();
+        }
         company.setName(payload.getName());
         company.setAgency(payload.getAgency());
         company.setType(payload.getType());

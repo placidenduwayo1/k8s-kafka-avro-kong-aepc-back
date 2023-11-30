@@ -25,7 +25,7 @@ public class CompanyController {
     @PostMapping(value = "/companies")
     public List<String> produceConsumeAndSaveCompany(@RequestBody CompanyDto dto) throws
             CompanyEmptyFieldsException, CompanyAlreadyExistsException, CompanyTypeInvalidException, RemoteApiAddressNotLoadedException,
-            RemoteAddressAlreadyHoldsCompanyException, CompanyNotFoundException {
+            RemoteAddressAlreadyHoldsCompanyException {
 
         Company consumed = companyService.produceKafkaEventCompanyCreate(dto);
         Company saved = companyService.createCompany(consumed);
@@ -63,12 +63,12 @@ public class CompanyController {
         return companyService.getCompanyByAgency(agency);
     }
     @GetMapping(value = "/companies/addresses/id/{addressId}")
-    public Company getCompanyOfGivenAddressId(@PathVariable(name = "addressId") String addressId) throws RemoteApiAddressNotLoadedException, CompanyNotFoundException {
+    public Company getCompanyOfGivenAddressId(@PathVariable(name = "addressId") String addressId) throws RemoteApiAddressNotLoadedException,
+            CompanyNotFoundException {
         return companyService.getCompanyOfGivenAddressId(addressId);
     }
     @GetMapping(value = "/companies/addresses/city/{city}")
-    public List<Company> getCompaniesOfGivenAddressCity(@PathVariable(name = "city") String city) throws RemoteApiAddressNotLoadedException,
-            CompanyNotFoundException {
+    public List<Company> getCompaniesOfGivenAddressCity(@PathVariable(name = "city") String city) throws RemoteApiAddressNotLoadedException, CompanyNotFoundException {
         return companyService.getCompaniesOfGivenAddressCity(city);
     }
 }

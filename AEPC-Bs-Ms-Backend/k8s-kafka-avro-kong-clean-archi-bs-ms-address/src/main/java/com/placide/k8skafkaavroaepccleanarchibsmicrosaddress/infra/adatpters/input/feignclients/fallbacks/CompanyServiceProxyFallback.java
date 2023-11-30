@@ -4,8 +4,6 @@ import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.E
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.model.CompanyModel;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.proxy.CompanyServiceProxy;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 @Component
 public class CompanyServiceProxyFallback implements CompanyServiceProxy {
     @Override

@@ -1,10 +1,7 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicroscompany.infra.adapters.output.models;
 
 import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.infra.adapters.input.feignclient.models.AddressModel;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +20,7 @@ public class CompanyModel {
     private String agency;
     private String type;
     private String connectedDate;
+    @Column(unique = true)
     private String addressId;
     @Transient
     private AddressModel addressModel;

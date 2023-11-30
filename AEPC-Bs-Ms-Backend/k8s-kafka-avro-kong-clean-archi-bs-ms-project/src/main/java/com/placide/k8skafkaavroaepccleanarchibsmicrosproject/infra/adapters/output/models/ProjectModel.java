@@ -2,10 +2,7 @@ package com.placide.k8skafkaavroaepccleanarchibsmicrosproject.infra.adapters.out
 
 import com.placide.k8skafkaavroaepccleanarchibsmicrosproject.domain.beans.company.Company;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosproject.domain.beans.employee.Employee;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +25,7 @@ public class ProjectModel {
     private String employeeId;
     @Transient
     private Employee employee;
+    @Column(unique = true)
     private String companyId;
     @Transient
     private Company company;

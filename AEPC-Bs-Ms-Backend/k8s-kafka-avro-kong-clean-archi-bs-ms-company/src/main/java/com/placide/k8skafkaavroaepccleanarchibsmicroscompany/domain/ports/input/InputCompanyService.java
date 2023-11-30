@@ -8,18 +8,20 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InputCompanyService {
-    Company produceKafkaEventCompanyCreate(CompanyDto dto) throws
-            CompanyTypeInvalidException, CompanyEmptyFieldsException, CompanyAlreadyExistsException, RemoteApiAddressNotLoadedException, RemoteAddressAlreadyHoldsCompanyException, CompanyNotFoundException;
-    Company createCompany(Company company) throws
-            CompanyAlreadyExistsException, CompanyEmptyFieldsException,
+    Company produceKafkaEventCompanyCreate(CompanyDto dto) throws CompanyTypeInvalidException,
+            CompanyEmptyFieldsException, CompanyAlreadyExistsException, RemoteApiAddressNotLoadedException,
+            RemoteAddressAlreadyHoldsCompanyException;
+    Company createCompany(Company company) throws CompanyAlreadyExistsException, CompanyEmptyFieldsException,
             CompanyTypeInvalidException, RemoteApiAddressNotLoadedException;
     Optional<Company> getCompanyById(String id) throws CompanyNotFoundException, RemoteApiAddressNotLoadedException;
     List<Company> loadCompanyByInfo(String name, String agency, String type);
     List<Company> loadAllCompanies();
-    Company produceKafkaEventCompanyDelete(String id) throws CompanyNotFoundException, RemoteApiAddressNotLoadedException, CompanyAlreadyAssignedRemoteProjectsException;
+    Company produceKafkaEventCompanyDelete(String id) throws CompanyNotFoundException, RemoteApiAddressNotLoadedException,
+            CompanyAlreadyAssignedRemoteProjectsException;
     String deleteCompany(String id) throws CompanyNotFoundException, RemoteApiAddressNotLoadedException;
-    Company produceKafkaEventCompanyEdit(CompanyDto payload, String id) throws
-            CompanyNotFoundException, CompanyTypeInvalidException, CompanyEmptyFieldsException, RemoteApiAddressNotLoadedException, RemoteAddressAlreadyHoldsCompanyException;
+    Company produceKafkaEventCompanyEdit(CompanyDto payload, String id) throws CompanyNotFoundException, CompanyTypeInvalidException,
+            CompanyEmptyFieldsException, RemoteApiAddressNotLoadedException,
+            RemoteAddressAlreadyHoldsCompanyException;
     Company editCompany(Company payload) throws RemoteApiAddressNotLoadedException;
     List<Company> getCompaniesByName(String companyName);
     List<Company> getCompanyByAgency(String agency);

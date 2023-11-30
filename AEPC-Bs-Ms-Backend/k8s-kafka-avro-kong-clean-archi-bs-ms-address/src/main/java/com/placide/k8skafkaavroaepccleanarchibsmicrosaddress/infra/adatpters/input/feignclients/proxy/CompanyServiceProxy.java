@@ -7,8 +7,6 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import java.util.List;
-
 @FeignClient(name = "k8s-kafka-avro-kong-bs-ms-company", url = "http://k8s-kafka-avro-kong-bs-ms-company:8682",
         path = "/bs-ms-company-api", fallback = CompanyServiceProxyFallback.class)
 @Qualifier(value = "company-service-proxy")

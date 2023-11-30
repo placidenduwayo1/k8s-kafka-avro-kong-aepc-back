@@ -1,10 +1,7 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosemployee.infra.adapters.output.models;
 
 import com.placide.k8skafkaavroaepccleanarchibsmicrosemployee.infra.adapters.input.feignclients.models.AddressModel;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +20,7 @@ public class EmployeeModel {
     private String employeeId;
     private String firstname;
     private String lastname;
+    @Column(unique = true)
     private String email;
     private String hireDate;
     private String state;

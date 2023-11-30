@@ -8,7 +8,7 @@ public enum ExceptionMsg {
     COMPANY_TYPE_UNKNOWN_EXCEPTION("Company Type Unknown Exception"),
     REMOTE_ADDRESS_API_EXCEPTION("Remote Address Api Unreachable Exception"),
     COMPANY_ASSIGNED_PROJECT_EXCEPTION("Cannot Delete Company Already Assigned Remote Project(s) Exception: "),
-    REMOTE_ADDRESS_ALREADY_HOLDS_COMPANY_EXCEPTION("Remote Address Already Holds Company Exception: ");
+    REMOTE_ADDRESS_ALREADY_HOLDS_COMPANY_EXCEPTION("Remote Address Already Holds Company Exception");
     private final String message;
 
     ExceptionMsg(String message) {
