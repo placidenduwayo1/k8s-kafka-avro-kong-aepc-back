@@ -4,15 +4,13 @@ import com.placide.k8skafkaavroaepccleanarchibsmicrosproject.domain.beans.compan
 import com.placide.k8skafkaavroaepccleanarchibsmicrosproject.domain.beans.employee.Employee;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "projects")
+@Builder @Data @AllArgsConstructor @NoArgsConstructor
+@Entity @Table(name = "projects")
 public class ProjectModel {
     @Id
     @GenericGenerator(name = "uuid")

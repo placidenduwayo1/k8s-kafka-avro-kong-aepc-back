@@ -7,6 +7,7 @@ import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.domain.exceptions.*
 import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.domain.ports.output.OutputCompanyService;
 import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.domain.ports.output.OutputKafkaProducerService;
 import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.domain.ports.output.OutputRemoteAddressService;
+import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.domain.ports.output.OutputRemoteProjectService;
 import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.infra.adapters.output.mapper.CompanyMapper;
 import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.infra.adapters.output.models.CompanyDto;
 import org.junit.jupiter.api.Assertions;
@@ -19,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +32,8 @@ class CompanyUseCaseTest {
     private OutputCompanyService companyService;
     @Mock
     private OutputRemoteAddressService remoteAddressService;
+    @Mock
+    private OutputRemoteProjectService outputRemoteProjectService;
     @InjectMocks
     private CompanyUseCase underTest;
     private static final String COMPANY_ID = "company-id";
@@ -43,8 +47,13 @@ class CompanyUseCaseTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        address = new Address(ADDRESS_ID, 2, "Allée de la Haye du Temple", 59160,
-                "Lomme", "France");
+        address = Address.builder()
+                .addressId(ADDRESS_ID)
+                .num(2)
+                .street("Allée de la Haye du Temple")
+                .poBox(59160).city("Lomme")
+                .country("France")
+                .build();
         dto = CompanyDto.builder()
                 .name(NAME)
                 .agency(AGENCY)
@@ -55,7 +64,7 @@ class CompanyUseCaseTest {
 
     @Test
     void produceKafkaEventCompanyCreate() throws CompanyEmptyFieldsException, CompanyAlreadyExistsException, CompanyTypeInvalidException,
-            RemoteApiAddressNotLoadedException, RemoteAddressAlreadyHoldsCompanyException, CompanyNotFoundException {
+            RemoteApiAddressNotLoadedException, RemoteAddressAlreadyHoldsCompanyException{
         //PREPARE
         Company bean = CompanyMapper.fromDtoToBean(dto);
         bean.setCompanyId(UUID.randomUUID().toString());
@@ -139,7 +148,8 @@ class CompanyUseCaseTest {
     }
 
     @Test
-    void produceKafkaEventCompanyDelete() throws CompanyNotFoundException, CompanyAlreadyAssignedRemoteProjectsException, RemoteApiAddressNotLoadedException {
+    void produceKafkaEventCompanyDelete() throws CompanyNotFoundException, CompanyAlreadyAssignedRemoteProjectsException,
+            RemoteApiAddressNotLoadedException {
         //PREPARE
         Company bean = CompanyMapper.fromDtoToBean(dto);
         bean.setCompanyId(UUID.randomUUID().toString());
@@ -149,6 +159,7 @@ class CompanyUseCaseTest {
         CompanyAvro avro = CompanyMapper.fromBeanToAvro(bean);
         //EXECUTE
         Mockito.when(remoteAddressService.getRemoteAddressById(ADDRESS_ID)).thenReturn(address);
+        Mockito.when(outputRemoteProjectService.getRemoteProjectsOfCompany(COMPANY_ID)).thenReturn(Collections.emptyList());
         Mockito.when(companyService.getCompanyById(COMPANY_ID)).thenReturn(Optional.of(bean));
         Company actual1 = underTest.getCompanyById(COMPANY_ID).orElseThrow(CompanyNotFoundException::new);
         Mockito.when(kafkaProducerService.produceKafkaEventCompanyDelete(avro)).thenReturn(avro);

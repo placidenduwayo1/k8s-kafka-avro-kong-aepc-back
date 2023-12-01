@@ -3,17 +3,15 @@ package com.placide.k8skafkaavroaepccleanarchibsmicrosemployee.infra.adapters.ou
 import com.placide.k8skafkaavroaepccleanarchibsmicrosemployee.infra.adapters.input.feignclients.models.AddressModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "employees")
+@Builder @AllArgsConstructor @NoArgsConstructor @Data
+@Entity @Table(name = "employees")
 public class EmployeeModel {
     @Id
     @GenericGenerator(name = "uuid")

@@ -1,9 +1,9 @@
-package com.placide.k8skafkaavroaepccleanarchibsmicrosproject.domain.beans.employee;
+package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans;
 
 import lombok.Builder;
 import lombok.Data;
 
-@Builder @Data
+@Data @Builder
 public class Employee {
     private String employeeId;
     private String firstname;
@@ -12,16 +12,18 @@ public class Employee {
     private String hireDate;
     private String state;
     private String type;
+
     @Override
     public String toString() {
-        return "Employee-Api [" +
-                "id:'" + employeeId + '\'' +
+        return "Employee-API:[" +
+                "employee-id:'" + employeeId + '\'' +
                 ", firstname:'" + firstname + '\'' +
                 ", lastname:'" + lastname + '\'' +
                 ", email:'" + email + '\'' +
-                ", hire-date:'" + hireDate + '\'' +
-                ", state:'" + state + '\'' +
+                ", here-date:'" + hireDate + '\'' +
+                ", employee-state:'" + state + '\'' +
                 ", type:'" + type + '\'' +
                 ']';
     }
+
 }

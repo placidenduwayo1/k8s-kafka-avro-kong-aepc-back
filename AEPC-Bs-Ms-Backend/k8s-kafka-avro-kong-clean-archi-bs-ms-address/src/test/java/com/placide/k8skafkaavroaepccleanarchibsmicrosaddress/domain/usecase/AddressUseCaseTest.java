@@ -1,10 +1,12 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.usecase;
 
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.avrobean.AddressAvro;
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Address;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Address;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.*;
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputKafkaProducerAddressService;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputAddressService;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputKafkaProducerAddressService;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputRemoteCompanyService;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputRemoteEmployeeService;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.mapper.AddressMapper;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.models.AddressDto;
 import org.junit.jupiter.api.Assertions;
@@ -15,29 +17,37 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 
-class UseCaseTest {
+class AddressUseCaseTest {
     @Mock
     private OutputAddressService outputAddressServiceMock;
     @Mock
     private OutputKafkaProducerAddressService kafkaProducerAddressServiceMock;
+    @Mock
+    private OutputRemoteCompanyService outputRemoteCompanyService;
+    @Mock
+    private OutputRemoteEmployeeService outputRemoteEmployeeService;
     @InjectMocks
-    private UseCase underTest;
+    private AddressUseCase underTest;
     private Address address;
     private AddressAvro addressAvro;
 
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        address = new Address(
-                UUID.randomUUID().toString(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes", "France"
-        );
+        address = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         addressAvro = AddressMapper.mapBeanToAvro(address);
     }
 
@@ -58,10 +68,14 @@ class UseCaseTest {
 
     @Test
     void saveInDbConsumedAddress() {
-        Address newAddress = new Address(
-                address.getAddressId(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes", "France");
+        Address newAddress = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         Mockito.when(outputAddressServiceMock.saveInDbConsumedAddress(newAddress))
                 .thenReturn(address);
         Address savedAddress = underTest.saveInDbConsumedAddress(newAddress);
@@ -97,11 +111,14 @@ class UseCaseTest {
 
     @Test
     void getAddress() throws AddressNotFoundException {
-        Address newAddress = new Address(
-                UUID.randomUUID().toString(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes",
-                "France");
+        Address newAddress = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         Mockito.when(outputAddressServiceMock.getAddress("1L")).thenReturn(Optional.of(newAddress));
         Optional<Address> foundAddress = underTest.getAddress("1L");
         Assertions.assertAll("props", () -> {
@@ -111,10 +128,13 @@ class UseCaseTest {
     }
 
     @Test
-    void produceAndConsumeAddressId() throws AddressNotFoundException, AddressAlreadyAssignedCompanyException, AddressAlreadyAssignedEmployeeException {
+    void produceAndConsumeAddressDelete() throws AddressNotFoundException, AddressAlreadyAssignedCompanyException,
+            AddressAlreadyAssignedEmployeeException {
         String addressId = UUID.randomUUID().toString();
         Mockito.when(kafkaProducerAddressServiceMock.sendKafkaAddressDeleteEvent(addressAvro)).thenReturn(addressAvro);
         Mockito.when(outputAddressServiceMock.getAddress(addressId)).thenReturn(Optional.of(address));
+        Mockito.when(outputRemoteCompanyService.getRemoteCompanyOnGivenAddress(addressId)).thenReturn(null);
+        Mockito.when(outputRemoteEmployeeService.getRemoteEmployeesLivingAtAddress(addressId)).thenReturn(Collections.emptyList());
         Address actual = underTest.produceAndConsumeAddressDelete(addressId);
         Assertions.assertAll("props", () -> {
             Mockito.verify(kafkaProducerAddressServiceMock, Mockito.atLeast(1)).sendKafkaAddressDeleteEvent(addressAvro);
@@ -141,7 +161,7 @@ class UseCaseTest {
         String actualMessage = underTest.deleteAddress(addressId);
         //VERIFY
 
-        Assertions.assertAll("props",()->{
+        Assertions.assertAll("props", () -> {
             Mockito.verify(outputAddressServiceMock, Mockito.atLeast(1)).deleteAddress(address.getAddressId());
             Mockito.verify(outputAddressServiceMock, Mockito.atLeast(1)).getAddress(addressId);
             Assertions.assertNotNull(actualMessage);
@@ -182,14 +202,18 @@ class UseCaseTest {
     @Test
     void editAddress() {
         // PREPARE
-        Address updatedAddress = new Address(
-                UUID.randomUUID().toString(),
-                10, "Avenue de Liège",
-                59300, "Valenciennes", "France");
+        Address updatedAddress = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         //EXECUTE
         Mockito.when(outputAddressServiceMock.updateAddress(address)).thenReturn(updatedAddress);
         Address actual = underTest.editAddress(address);
-        Assertions.assertAll("props",()->{
+        Assertions.assertAll("props", () -> {
             Assertions.assertEquals(updatedAddress.getAddressId(), actual.getAddressId());
             Assertions.assertEquals(updatedAddress.getNum(), actual.getNum());
             Assertions.assertEquals(updatedAddress.getStreet(), actual.getStreet());

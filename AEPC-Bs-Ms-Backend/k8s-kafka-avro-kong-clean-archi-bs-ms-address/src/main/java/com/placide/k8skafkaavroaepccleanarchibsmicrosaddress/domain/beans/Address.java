@@ -1,5 +1,5 @@
 
-package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean;
+package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans;
 
 public class Address {
   private String addressId;
@@ -9,16 +9,13 @@ public class Address {
   private String city;
   private String country;
 
-  public Address() {
-  }
-
-  public Address(String addressId, int num, String street, int poBox, String city, String country) {
-    this.addressId = addressId;
-    this.num = num;
-    this.street = street;
-    this.poBox = poBox;
-    this.city = city;
-    this.country = country;
+  private Address(AddressBuilder builder) {
+    this.addressId = builder.addressId;
+    this.num = builder.num;
+    this.street = builder.street;
+    this.poBox = builder.poBox;
+    this.city = builder.city;
+    this.country = builder.country;
   }
 
   public String getAddressId() {
@@ -79,6 +76,49 @@ public class Address {
             ", city:'" + city + '\'' +
             ", country:'" + country + '\'' +
             ']';
+  }
+
+  public static class AddressBuilder {
+    private String addressId;
+    private int num;
+    private String street;
+    private int poBox;
+    private String city;
+    private String country;
+
+    public AddressBuilder addressId(String addressId) {
+      this.addressId = addressId;
+      return this;
+    }
+
+    public AddressBuilder num(int num) {
+      this.num = num;
+      return this;
+    }
+
+    public AddressBuilder street(String street) {
+      this.street = street;
+      return this;
+    }
+
+    public AddressBuilder poBox(int poBox) {
+      this.poBox = poBox;
+      return this;
+    }
+
+    public AddressBuilder city(String city) {
+      this.city = city;
+      return this;
+    }
+
+    public AddressBuilder country(String country) {
+      this.country = country;
+      return this;
+    }
+
+    public Address build(){
+      return new Address(this);
+    }
   }
 }
 

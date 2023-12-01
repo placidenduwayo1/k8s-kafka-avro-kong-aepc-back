@@ -38,7 +38,14 @@ class EmployeeControllerTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        address = new Address(ADDRESS_ID,184,"Avenue de Liège",59300,"Valenciennes","France");
+        address = Address.builder()
+                .addressId("address-Paris")
+                .num(184)
+                .street("Rue Notre Dame des Victoires")
+                .poBox(5930)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         dto = EmployeeDto.builder()
                 .firstname(FIRSTNAME)
                 .lastname(LASTNAME)
@@ -67,7 +74,7 @@ class EmployeeControllerTest {
         Mockito.when(remoteInputAddressService.getRemoteAddressById(ADDRESS_ID)).thenReturn(address);
         Address actual1 = underTest.getRemoteAddress(ADDRESS_ID);
         Mockito.when(inputEmployeeService.produceKafkaEventEmployeeCreate(dto)).thenReturn(bean);
-        Mockito.when(inputEmployeeService.createEmployee(bean)).thenReturn(new Employee());
+        Mockito.when(inputEmployeeService.createEmployee(bean)).thenReturn(new Employee.EmployeeBuilder().build());
         List<String> consumedAndSaved = underTest.produceConsumeAndSaveEmployee(dto);
         //VERIFY
         Assertions.assertAll("assertions",()->{
@@ -180,10 +187,17 @@ class EmployeeControllerTest {
             RemoteApiAddressNotLoadedException, EmployeeNotFoundException {
         //PREPARE
         Employee updated = bean;
-        updated.setAddress(new Address("address-Paris",44,"Rue Notre Dame des Victoires",74002,"Paris","France"));
+        updated.setAddress(Address.builder()
+                .addressId("address-Paris")
+                .num(44)
+                .street("Rue Notre Dame des Victoires")
+                .poBox(75002)
+                .city("Paris")
+                .country("France")
+                .build());
         //EXECUTE
         Mockito.when(inputEmployeeService.produceKafkaEventEmployeeEdit(dto,EMPLOYEE_ID)).thenReturn(updated);
-        Mockito.when(inputEmployeeService.editEmployee(updated)).thenReturn(new Employee());
+        Mockito.when(inputEmployeeService.editEmployee(updated)).thenReturn(new Employee.EmployeeBuilder().build());
         List<String> consumedAndSaved = underTest.update(EMPLOYEE_ID,dto);
         //VERIFY
         Assertions.assertAll("assertions",()->{

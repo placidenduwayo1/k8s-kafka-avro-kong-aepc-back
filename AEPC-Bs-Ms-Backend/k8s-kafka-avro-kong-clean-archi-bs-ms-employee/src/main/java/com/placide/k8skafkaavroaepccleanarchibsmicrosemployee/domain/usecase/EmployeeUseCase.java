@@ -100,10 +100,9 @@ public class EmployeeUseCase implements InputEmployeeService, RemoteInputAddress
             EmployeeAlreadyAssignedProjectException {
         Employee employee = getEmployeeById(employeeId).orElseThrow(EmployeeNotFoundException::new);
         List<Project> projects = remoteOutputProjectService.loadRemoteProjectsAssignedToEmployee(employeeId);
-        for(Project prj: projects){
-            if(!prj.getProjectId().equals(ExceptionsMsg.EMPLOYEE_ASSIGNED_REMOTE_PROJECT_API_EXCEPTION.getMessage())){
-                throw new EmployeeAlreadyAssignedProjectException(ExceptionsMsg.EMPLOYEE_ASSIGNED_REMOTE_PROJECT_API_EXCEPTION.getMessage() + projects);
-            }
+        if(!projects.isEmpty()){
+            throw new EmployeeAlreadyAssignedProjectException(ExceptionsMsg.EMPLOYEE_ASSIGNED_REMOTE_PROJECT_API_EXCEPTION
+                    .getMessage() + projects);
         }
         setEmployeeDependency(employee,employee.getAddressId());
         EmployeeAvro employeeAvro = EmployeeMapper.fromBeanToAvro(employee);

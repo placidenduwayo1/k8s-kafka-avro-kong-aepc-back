@@ -48,9 +48,22 @@ class ProjectControllerTest {
                 .employeeId(EMPLOYEE_ID)
                 .companyId(COMPANY_ID)
                 .build();
-        employee = new Employee(EMPLOYEE_ID, "Placide", "Nduwayo", "placide.nduwayo@natan.fr", "2020-10-27:00:00:00",
-                "active", "software-engineer");
-        company = new Company(COMPANY_ID, "Natan", "Paris", "esn", "company-creation");
+        employee = Employee.builder()
+                .employeeId(EMPLOYEE_ID)
+                .firstname("Placide")
+                .lastname("Nduwayo")
+                .email("placide.nduwayo@natan.fr")
+                .hireDate("2020-10-27:00:00:00")
+                .state("active")
+                .type("software-engineer")
+                .build();
+        company = Company.builder()
+                .companyId(COMPANY_ID)
+                .name("Natan")
+                .agency("Paris")
+                .type("esn")
+                .connectedDate("company-connected")
+                .build();
     }
 
     @Test
@@ -171,7 +184,8 @@ class ProjectControllerTest {
     }
 
     @Test
-    void delete() throws ProjectNotFoundException, RemoteCompanyApiException, RemoteEmployeeApiException, ProjectAssignedRemoteEmployeeApiException, ProjectAssignedRemoteCompanyApiException {
+    void delete() throws ProjectNotFoundException, RemoteCompanyApiException, RemoteEmployeeApiException, ProjectAssignedRemoteEmployeeApiException,
+            ProjectAssignedRemoteCompanyApiException {
         //PREPARE
         Project bean = Mapper.fromTo(dto);
         //EXECUTE
@@ -198,7 +212,7 @@ class ProjectControllerTest {
         Mockito.when(inputRemoteAPIEmployeeService.getRemoteEmployeeAPI(EMPLOYEE_ID)).thenReturn(employee);
         Mockito.when(inputRemoteAPICompanyService.getRemoteApiCompany(COMPANY_ID)).thenReturn(company);
         Mockito.when(inputProjectService.produceKafkaEventProjectUpdate(dto,PROJECT_ID)).thenReturn(bean);
-        Mockito.when(inputProjectService.updateProject(actual)).thenReturn(new Project());
+        Mockito.when(inputProjectService.updateProject(actual)).thenReturn(new Project.ProjectBuilder().build());
         List<String> consumedAndSaved = underTest.update(PROJECT_ID, dto);
         //VERIFY
         Assertions.assertAll("assertions",()->{

@@ -11,26 +11,20 @@ public class EmployeeMapper {
 
     private EmployeeMapper(){}
     public static Employee toBean(EmployeeModel model){
-        Employee employee = new Employee();
+        Employee employee = new Employee.EmployeeBuilder().build();
         BeanUtils.copyProperties(model,employee);
         return employee;
     }
     public static EmployeeModel toModel(Employee bean){
-        EmployeeModel model = new EmployeeModel();
+        EmployeeModel model = EmployeeModel.builder().build();
         BeanUtils.copyProperties(bean, model);
         return model;
     }
 
     public static Employee fromDto(EmployeeDto dto){
-        Employee bean = new Employee();
+        Employee bean = new Employee.EmployeeBuilder().build();
         BeanUtils.copyProperties(dto,bean);
         return bean;
-    }
-
-    public static EmployeeDto fromBeanToDto(Employee bean) {
-        EmployeeDto dto = new EmployeeDto();
-        BeanUtils.copyProperties(bean,dto);
-        return dto;
     }
 
     public static EmployeeAvro fromBeanToAvro(Employee employee) {
@@ -58,23 +52,25 @@ public class EmployeeMapper {
 
     public static Employee fromAvroToBean(EmployeeAvro employeeAvro){
         com.placide.k8skafkaavroaepccleanarchibsmicrosemployee.domain.beans.address.Address address =
-                new com.placide.k8skafkaavroaepccleanarchibsmicrosemployee.domain.beans.address.Address(
-                        employeeAvro.getAddressId(),
-                        employeeAvro.getAddress().getNum(),
-                        employeeAvro.getAddress().getStreet(),
-                        employeeAvro.getAddress().getPoBox(),
-                        employeeAvro.getAddress().getCity(),
-                        employeeAvro.getAddress().getCountry()
-                );
+                com.placide.k8skafkaavroaepccleanarchibsmicrosemployee.domain.beans.address.Address.builder()
+                        .addressId(employeeAvro.getAddressId())
+                        .num(employeeAvro.getAddress().getNum())
+                        .street(employeeAvro.getAddress().getStreet())
+                        .poBox(employeeAvro.getAddress().getPoBox())
+                        .city(employeeAvro.getAddress().getCity())
+                        .country(employeeAvro.getAddress().getCountry())
+                        .build();
 
-        return new Employee(employeeAvro.getEmployeeId(),
-                employeeAvro.getFirstname(),
-                employeeAvro.getLastname(),
-                employeeAvro.getEmail(),
-                employeeAvro.getHireDate(),
-                employeeAvro.getState(),
-                employeeAvro.getType(),
-                employeeAvro.getAddressId(),
-                address);
+        return new Employee.EmployeeBuilder()
+                .employeeId(employeeAvro.getEmployeeId())
+                .firstname(employeeAvro.getFirstname())
+                .lastname(employeeAvro.getLastname())
+                .email(employeeAvro.getEmail())
+                .hireDate(employeeAvro.getHireDate())
+                .state(employeeAvro.getState())
+                .type(employeeAvro.getType())
+                .addressId(employeeAvro.getAddressId())
+                .address(address)
+                .build();
     }
 }

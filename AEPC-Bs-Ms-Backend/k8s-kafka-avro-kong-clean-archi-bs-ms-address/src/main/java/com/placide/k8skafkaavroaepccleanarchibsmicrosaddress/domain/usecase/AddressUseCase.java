@@ -1,9 +1,9 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.usecase;
 
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.avrobean.AddressAvro;
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Address;
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Company;
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Employee;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Address;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Company;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Employee;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.*;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.input.InputAddressService;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputKafkaProducerAddressService;
@@ -17,13 +17,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class UseCase implements InputAddressService {
+public class AddressUseCase implements InputAddressService {
     private final OutputAddressService outputAddressService;
     private final OutputKafkaProducerAddressService outputKafkaProducerAddressService;
     private final OutputRemoteCompanyService outputRemoteCompanyService;
     private final OutputRemoteEmployeeService outputRemoteEmployeeService;
 
-    public UseCase(
+    public AddressUseCase(
             OutputKafkaProducerAddressService outputKafkaProducerAddressService,
             OutputAddressService outputAddressService, OutputRemoteCompanyService outputRemoteCompanyService,
             OutputRemoteEmployeeService outputRemoteEmployeeService) {
@@ -99,14 +99,12 @@ public class UseCase implements InputAddressService {
             AddressAlreadyAssignedEmployeeException {
         Address address = getAddress(addressId).orElseThrow(AddressNotFoundException::new);
         Company company = outputRemoteCompanyService.getRemoteCompanyOnGivenAddress(address.getAddressId());
-        if (!company.getCompanyId().equals(ExceptionMgs.ADDRESS_ASSIGNED_COMPANY_EXCEPTION.getMsg())) {
+        if (company!=null) {
             throw new AddressAlreadyAssignedCompanyException(ExceptionMgs.ADDRESS_ASSIGNED_COMPANY_EXCEPTION.getMsg() + company);
         }
         List<Employee> employees = outputRemoteEmployeeService.getRemoteEmployeesLivingAtAddress(address.getAddressId());
-        for (Employee e : employees) {
-            if (!e.getEmployeeId().equals(ExceptionMgs.ADDRESS_ASSIGNED_EMPLOYEE_EXCEPTION.getMsg())) {
-                throw new AddressAlreadyAssignedEmployeeException(ExceptionMgs.ADDRESS_ASSIGNED_EMPLOYEE_EXCEPTION.getMsg() + e);
-            }
+        if(!employees.isEmpty()){
+            throw new AddressAlreadyAssignedEmployeeException(ExceptionMgs.ADDRESS_ASSIGNED_EMPLOYEE_EXCEPTION.getMsg() + employees);
         }
         AddressAvro addressAvro = AddressMapper.mapBeanToAvro(address);
         return AddressMapper.mapAvroToBean(outputKafkaProducerAddressService.sendKafkaAddressDeleteEvent(addressAvro));

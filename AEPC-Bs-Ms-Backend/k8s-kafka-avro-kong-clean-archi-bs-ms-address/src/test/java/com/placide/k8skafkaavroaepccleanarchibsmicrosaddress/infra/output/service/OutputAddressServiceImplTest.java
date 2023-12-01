@@ -1,6 +1,6 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.output.service;
 
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Address;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Address;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.AddressNotFoundException;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.mapper.AddressMapper;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.models.AddressDto;
@@ -31,11 +31,14 @@ class OutputAddressServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        address = new Address(
-                UUID.randomUUID().toString(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes",
-                "France");
+        address = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         addressAvro = AddressAvro.newBuilder()
                 .setAddressId(address.getAddressId())
                 .setNum(address.getNum())
@@ -77,9 +80,14 @@ class OutputAddressServiceImplTest {
         int poBox = 59300;
         String city = "Valenciennes";
         String country = "France";
-        AddressModel addressVal = new AddressModel(
-                UUID.randomUUID().toString(),
-                num, street, poBox, city, country);
+        AddressModel addressVal = AddressModel.builder()
+                .addressId(UUID.randomUUID().toString())
+                .num(num)
+                .street(street)
+                .poBox(poBox)
+                .city(city)
+                .country(country)
+                .build();
 
         List<AddressModel> models = List.of(addressVal);
 
@@ -97,16 +105,23 @@ class OutputAddressServiceImplTest {
     @Test
     void getAllAddresses() {
         //PREPARE
-        AddressModel addressVal = new AddressModel(
-                UUID.randomUUID().toString(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes",
-                "France");
-        AddressModel addressParis = new AddressModel(
-                UUID.randomUUID().toString(),
-                44, "Rue Notre Dame des Victoires",
-                74002, "Paris",
-                "France");
+        AddressModel addressVal = AddressModel.builder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
+
+        AddressModel addressParis = AddressModel.builder()
+                .addressId(UUID.randomUUID().toString())
+                .num(44)
+                .street("Rue Notre Dame des Victoires")
+                .poBox(74002)
+                .city("Paris")
+                .country("France")
+                .build();
 
         List<AddressModel> addressModels = List.of(addressVal, addressParis);
 
@@ -123,11 +138,14 @@ class OutputAddressServiceImplTest {
     @Test
     void getAddress() throws AddressNotFoundException {
         //PREPARE
-        Optional<AddressModel> addressVal = Optional.of(new AddressModel(
-                UUID.randomUUID().toString(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes",
-                "France"));
+        Optional<AddressModel> addressVal = Optional.of(AddressModel.builder()
+                        .addressId(UUID.randomUUID().toString())
+                        .num(184)
+                        .street("Avenue de Liège")
+                        .poBox(59300)
+                        .city("Valenciennes")
+                        .country("France")
+                        .build());
         String id = "uuid-001";
         //EXECUTE
         Mockito
@@ -181,17 +199,24 @@ class OutputAddressServiceImplTest {
     @Test
     void updateAddress() {
         //PREPARE
-        Address addressVal = new Address(
-                UUID.randomUUID().toString(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes",
-                "France");
+        Address addressVal = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
+
         AddressModel addressModel = AddressMapper.mapBeanToModel(addressVal);
-        Address expectedAddress = new Address(
-                UUID.randomUUID().toString(),
-                5, "Avenue de Liège",
-                59300, "Valenciennes",
-                "France");
+        Address expectedAddress = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(5)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         AddressModel expectedAddressModel = AddressMapper.mapBeanToModel(expectedAddress);
         //EXECUTE
         Mockito.when(addressRepositoryMock.save(addressModel)).thenReturn(expectedAddressModel);
@@ -205,10 +230,23 @@ class OutputAddressServiceImplTest {
     void getAddressesOfGivenCity(){
         //PREPARE
         String city = "Valenciennes";
-        List<Address> addresses = List.of(
-                new Address("1L",184, "Avenue de Liège",59300, "Valenciennes","France"),
-                new Address("1L",2, "Rue René Georges",59300, "Valenciennes","France")
-        );
+        Address address1 = new Address.AddressBuilder()
+                .addressId("1L")
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
+        Address address2 = new Address.AddressBuilder()
+                .addressId("2L")
+                .num(2)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
+        List<Address> addresses = List.of(address1, address2);
         //EXECUTE
         List<AddressModel> addressModels = addresses.stream().map(AddressMapper::mapBeanToModel).toList();
         Mockito.when(addressRepositoryMock.findByCity(city)).thenReturn(addressModels);

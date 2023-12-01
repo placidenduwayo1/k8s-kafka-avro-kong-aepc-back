@@ -42,12 +42,34 @@ class OutputProjectKafkaProducerServiceImplTest {
         String brokers = KAFKA_CONTAINER.getBootstrapServers();
         log.info("list of kafka container brokers: {}", brokers);
         System.setProperty("brokers", brokers);
-        Employee remoteEmployee = new Employee(EMPLOYEE_ID, "Placide", "Nduwayo", "pnduwayo@gmail.com", Timestamp.from(Instant.now()).toString(),
-                "active", "software-engineer");
-        Company remoteCompany = new Company(COMPANY_ID, "Natan", "Paris", "esn", "2020-10-20:00:00:00");
-        project = new Project("uuid", "Guppy", "outil d'aide au business analyse de la production des besoins techniques",
-                1, "ongoing", Timestamp.from(Instant.now()).toString(), EMPLOYEE_ID, remoteEmployee, COMPANY_ID, remoteCompany);
-
+        Employee remoteEmployee = Employee.builder()
+                .employeeId(EMPLOYEE_ID)
+                .firstname("Placide")
+                .lastname("Nduwayo")
+                .email("placide.nduwayo@natan.fr")
+                .hireDate("2020-10-27:00:00:00")
+                .state("active")
+                .type("software-engineer")
+                .build();
+        Company remoteCompany = Company.builder()
+                .companyId(COMPANY_ID)
+                .name("Natan")
+                .agency("Paris")
+                .type("esn")
+                .connectedDate("company-connected")
+                .build();
+        project = new Project.ProjectBuilder()
+                .projectId("uuid")
+                .name("Guppy")
+                .description("outil d'aide au business analyse de la production des besoins techniques")
+                .priority(1)
+                .state("ongoing")
+                .createdDate(Timestamp.from(Instant.now()).toString())
+                .employeeId(EMPLOYEE_ID)
+                .employee(remoteEmployee)
+                .companyId(COMPANY_ID)
+                .company(remoteCompany)
+                .build();
     }
 
     @Test

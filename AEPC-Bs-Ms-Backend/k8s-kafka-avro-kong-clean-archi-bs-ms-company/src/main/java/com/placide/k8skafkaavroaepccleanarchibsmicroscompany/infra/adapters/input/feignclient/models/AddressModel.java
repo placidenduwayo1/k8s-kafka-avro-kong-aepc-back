@@ -2,7 +2,7 @@ package com.placide.k8skafkaavroaepccleanarchibsmicroscompany.infra.adapters.inp
 
 import lombok.*;
 
-@Data @ToString @Builder @AllArgsConstructor @NoArgsConstructor
+@Builder @Data
 public class AddressModel {
     private String addressId;
     private int num;

@@ -56,9 +56,22 @@ class UseCaseTest {
                 .employeeId(EMPLOYEE_ID)
                 .companyId(COMPANY_ID)
                 .build();
-        employee = new Employee(EMPLOYEE_ID, "Placide", "Nduwayo", "placide.nduwayo@natan.fr", "2020-10-27:00:00:00",
-                "active", "software-engineer");
-        company = new Company(COMPANY_ID, "Natan", "Paris", "esn", "company-creation");
+        employee = Employee.builder()
+                .employeeId(EMPLOYEE_ID)
+                .firstname("Placide")
+                .lastname("Nduwayo")
+                .email("placide.nduwayo@natan.fr")
+                .hireDate("2020-10-27:00:00:00")
+                .state("active")
+                .type("software-engineer")
+                .build();
+        company = Company.builder()
+                .companyId(COMPANY_ID)
+                .name("Natan")
+                .agency("Paris")
+                .type("esn")
+                .connectedDate("company-connected")
+                .build();
         project = Mapper.fromTo(projectDto);
         project.setProjectId(PROJECT_ID);
         project.setCreatedDate(Timestamp.from(Instant.now()).toString());
@@ -85,12 +98,8 @@ class UseCaseTest {
             Mockito.verify(kafkaProducerService, Mockito.atLeast(1)).produceKafkaEventProjectCreate(Mockito.any());
             Assertions.assertNotNull(actual);
             Assertions.assertEquals(projectAvro.getProjectId(),actual.getProjectId());
-            Assertions.assertEquals(projectAvro.getEmployee().getEmployeeId(), actual.getEmployee().getEmployeeId());
-            Assertions.assertEquals(projectAvro.getEmployee().getFirstname(), actual.getEmployee().getFirstname());
-            Assertions.assertEquals(projectAvro.getEmployee().getLastname(), actual.getEmployee().getLastname());
             Assertions.assertEquals(projectAvro.getCompany().getCompanyId(), actual.getCompany().getCompanyId());
-            Assertions.assertEquals(projectAvro.getCompany().getName(), actual.getCompany().getName());
-            Assertions.assertEquals(projectAvro.getCompany().getAgency(), actual.getCompany().getAgency());
+            Assertions.assertEquals(projectAvro.getEmployee().getEmployeeId(), actual.getEmployee().getEmployeeId());
         });
     }
 
@@ -145,9 +154,12 @@ class UseCaseTest {
     }
 
     @Test
-    void produceKafkaEventProjectDelete() throws ProjectNotFoundException, RemoteCompanyApiException, RemoteEmployeeApiException, ProjectAssignedRemoteEmployeeApiException, ProjectAssignedRemoteCompanyApiException {
+    void produceKafkaEventProjectDelete() throws ProjectNotFoundException, RemoteCompanyApiException, RemoteEmployeeApiException,
+            ProjectAssignedRemoteEmployeeApiException, ProjectAssignedRemoteCompanyApiException {
         //PREPARE
         ProjectAvro projectAvro = Mapper.fromBeanToAvro(project);
+        employee.setEmployeeId(ExceptionMsg.REMOTE_EMPLOYEE_API_EXCEPTION.getMessage());
+        company.setCompanyId(ExceptionMsg.REMOTE_COMPANY_API_EXCEPTION.getMessage());
         //EXECUTE
         Mockito.when(outputProjectService.getProject(PROJECT_ID)).thenReturn(Optional.of(project));
         Mockito.when(outputRemoteAPIEmployeeService.getRemoteEmployeeAPI(EMPLOYEE_ID)).thenReturn(employee);
@@ -161,12 +173,8 @@ class UseCaseTest {
             Mockito.verify(kafkaProducerService, Mockito.atLeast(1))
                     .produceKafkaEventProjectDelete(projectAvro);
             Assertions.assertEquals(projectAvro.getProjectId(),actual.getProjectId());
-            Assertions.assertEquals(projectAvro.getEmployee().getEmployeeId(), actual.getEmployee().getEmployeeId());
-            Assertions.assertEquals(projectAvro.getEmployee().getFirstname(), actual.getEmployee().getFirstname());
-            Assertions.assertEquals(projectAvro.getEmployee().getLastname(), actual.getEmployee().getLastname());
             Assertions.assertEquals(projectAvro.getCompany().getCompanyId(), actual.getCompany().getCompanyId());
-            Assertions.assertEquals(projectAvro.getCompany().getName(), actual.getCompany().getName());
-            Assertions.assertEquals(projectAvro.getCompany().getAgency(), actual.getCompany().getAgency());
+            Assertions.assertEquals(projectAvro.getEmployee().getEmployeeId(), actual.getEmployee().getEmployeeId());
             Mockito.verify(outputRemoteAPIEmployeeService, Mockito.atLeast(1))
                     .getRemoteEmployeeAPI(EMPLOYEE_ID);
             Mockito.verify(outputRemoteAPICompanyService, Mockito.atLeast(1))

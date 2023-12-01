@@ -1,13 +1,8 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosproject.infra.adapters.output.models;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@Builder @Data
 public class ProjectDto {
     private String name;
     private String description;

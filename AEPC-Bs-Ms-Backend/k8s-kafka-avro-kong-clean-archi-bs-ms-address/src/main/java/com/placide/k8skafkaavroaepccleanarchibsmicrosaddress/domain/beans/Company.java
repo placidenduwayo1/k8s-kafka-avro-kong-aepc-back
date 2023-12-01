@@ -1,9 +1,11 @@
-package com.placide.k8skafkaavroaepccleanarchibsmicrosproject.domain.beans.company;
+package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
-@Builder @Data
+@Data
+@Builder
 public class Company {
     private String companyId;
     private String name;
@@ -13,12 +15,12 @@ public class Company {
 
     @Override
     public String toString() {
-        return "Company-API [" +
-                "id:'" + companyId + '\'' +
-                ", name:'" + name + '\'' +
+        return "Company-API:[" +
+                "company-id:'" + companyId + '\'' +
+                ", company-name:'" + name + '\'' +
                 ", agency:'" + agency + '\'' +
                 ", type:'" + type + '\'' +
-                ", connected-date:" + connectedDate +
+                ", connected-date='" + connectedDate + '\'' +
                 ']';
     }
 }

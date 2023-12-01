@@ -49,12 +49,23 @@ class OutputKafkaProducerServiceImplTest {
         log.info("list of kafka container brokers: {}", bootstrapServers);
         System.setProperty("kafka.bootstrapAddress", bootstrapServers);
 
-        Address address = new Address(ADDRESS_ID, 2, "Allée de la Haye du Temple", 59160,
-                "Lomme", "France");
+        Address address = Address.builder()
+                .addressId(ADDRESS_ID)
+                .num(2)
+                .street("Allée de la Haye du Temple")
+                .poBox(59160).city("Lomme")
+                .country("France")
+                .build();
 
-        company = new Company(
-                UUID.randomUUID().toString(), "company-name", "Lomme", "esn",
-                Timestamp.from(Instant.now()).toString(),ADDRESS_ID, address);
+        company = new Company.CompanyBuilder()
+                .companyId(UUID.randomUUID().toString())
+                .name("company-name")
+                .agency("Lomme")
+                .type("esn")
+                .connectedDate(Timestamp.from(Instant.now()).toString())
+                .addressId(ADDRESS_ID)
+                .address(address)
+                .build();
         companyAvro = CompanyMapper.fromBeanToAvro(company);
     }
 

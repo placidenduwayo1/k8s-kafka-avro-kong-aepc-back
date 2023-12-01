@@ -1,6 +1,6 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output;
 
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Address;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Address;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.AddressCityNotFoundException;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.AddressNotFoundException;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.models.AddressDto;

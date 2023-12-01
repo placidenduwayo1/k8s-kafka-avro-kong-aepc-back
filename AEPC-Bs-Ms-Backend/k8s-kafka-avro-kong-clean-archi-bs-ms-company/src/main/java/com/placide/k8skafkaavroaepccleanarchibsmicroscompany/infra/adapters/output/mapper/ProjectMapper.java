@@ -7,7 +7,7 @@ import org.springframework.beans.BeanUtils;
 public class ProjectMapper {
     private ProjectMapper(){}
     public static Project toBean(ProjectModel model){
-        Project bean = new Project();
+        Project bean = Project.builder().build();
         BeanUtils.copyProperties(model,bean);
         return bean;
     }

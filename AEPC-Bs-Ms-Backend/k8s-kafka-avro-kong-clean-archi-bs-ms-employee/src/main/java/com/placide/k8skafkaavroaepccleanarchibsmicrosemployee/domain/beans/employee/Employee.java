@@ -13,22 +13,16 @@ public class Employee {
     private String addressId;
     private Address address;
 
-    public Employee() {
-    }
-
-    public Employee(String employeeId, String firstname,
-                    String lastname, String email, String hireDate,
-                    String state, String type,
-                    String addressId, Address address) {
-        this.employeeId = employeeId;
-        this.firstname = firstname;
-        this.lastname = lastname;
-        this.email = email;
-        this.hireDate = hireDate;
-        this.state = state;
-        this.type = type;
-        this.addressId = addressId;
-        this.address = address;
+    private Employee(EmployeeBuilder builder) {
+        this.employeeId = builder.employeeId;
+        this.firstname = builder.firstname;
+        this.lastname = builder.lastname;
+        this.email = builder.email;
+        this.hireDate = builder.hireDate;
+        this.state = builder.state;
+        this.type = builder.type;
+        this.addressId = builder.addressId;
+        this.address = builder.address;
     }
 
     public String getEmployeeId() {
@@ -115,5 +109,65 @@ public class Employee {
                 ", type:'" + type + '\'' +
                 ", address:" + address +
                 ']';
+    }
+    //Java Builder pattern
+    public static class EmployeeBuilder {
+        private String employeeId;
+        private String firstname;
+        private String lastname;
+        private String email;
+        private String hireDate;
+        private String state;
+        private String type;
+        private String addressId;
+        private Address address;
+        public EmployeeBuilder employeeId(String employeeId) {
+            this.employeeId = employeeId;
+            return this;
+        }
+
+        public EmployeeBuilder firstname(String firstname) {
+            this.firstname = firstname;
+            return this;
+        }
+
+        public EmployeeBuilder lastname(String lastname) {
+            this.lastname = lastname;
+            return this;
+        }
+
+        public EmployeeBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public EmployeeBuilder hireDate(String hireDate) {
+            this.hireDate = hireDate;
+            return this;
+        }
+
+        public EmployeeBuilder state(String state) {
+            this.state = state;
+            return this;
+        }
+
+        public EmployeeBuilder type(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public EmployeeBuilder addressId(String addressId) {
+            this.addressId = addressId;
+            return this;
+        }
+
+        public EmployeeBuilder address(Address address) {
+            this.address = address;
+            return this;
+        }
+
+        public Employee build(){
+            return new Employee(this);
+        }
     }
 }

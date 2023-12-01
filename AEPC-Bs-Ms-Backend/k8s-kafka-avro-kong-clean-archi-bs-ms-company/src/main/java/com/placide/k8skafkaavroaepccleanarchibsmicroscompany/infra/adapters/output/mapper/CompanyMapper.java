@@ -10,17 +10,17 @@ import org.springframework.beans.BeanUtils;
 public class CompanyMapper {
     private CompanyMapper(){}
     public static CompanyModel fromBeanToModel(Company company){
-        CompanyModel model = new CompanyModel();
+        CompanyModel model = CompanyModel.builder().build();
         BeanUtils.copyProperties(company, model);
         return model;
     }
     public static Company fromModelToBean(CompanyModel model) {
-        Company bean = new Company();
+        Company bean = new Company.CompanyBuilder().build();
         BeanUtils.copyProperties(model,bean);
         return bean;
     }
     public static Company fromDtoToBean(CompanyDto dto){
-        Company bean = new Company();
+        Company bean = new Company.CompanyBuilder().build();
         BeanUtils.copyProperties(dto,bean);
         return bean;
     }
@@ -47,20 +47,23 @@ public class CompanyMapper {
 
     public static Company fromAvroToBean(CompanyAvro companyAvro){
         com.placide.k8skafkaavroaepccleanarchibsmicroscompany.domain.beans.address.Address address =
-                new com.placide.k8skafkaavroaepccleanarchibsmicroscompany.domain.beans.address.Address(
-                        companyAvro.getAddressId(),
-                        companyAvro.getAddress().getNum(),
-                        companyAvro.getAddress().getStreet(),
-                        companyAvro.getAddress().getPoBox(),
-                        companyAvro.getAddress().getCity(),
-                        companyAvro.getAddress().getCountry()
-                );
-        return new Company(
-                companyAvro.getCompanyId(),
-                companyAvro.getName(),
-                companyAvro.getAgency(),
-                companyAvro.getType(),
-                companyAvro.getConnectedDate(),
-                companyAvro.getAddressId(), address);
+                com.placide.k8skafkaavroaepccleanarchibsmicroscompany.domain.beans.address.Address.builder()
+                        .addressId(companyAvro.getAddressId())
+                        .num(companyAvro.getAddress().getNum())
+                        .street(companyAvro.getAddress().getStreet())
+                        .poBox(companyAvro.getAddress().getPoBox())
+                        .city(companyAvro.getAddress().getCity())
+                        .country(companyAvro.getAddress().getCountry())
+                        .build();
+
+        return new Company.CompanyBuilder()
+                .companyId(companyAvro.getCompanyId())
+                .name(companyAvro.getName())
+                .agency(companyAvro.getAgency())
+                .type(companyAvro.getType())
+                .connectedDate(companyAvro.getConnectedDate())
+                .addressId(companyAvro.getAddressId())
+                .address(address)
+                .build();
     }
 }

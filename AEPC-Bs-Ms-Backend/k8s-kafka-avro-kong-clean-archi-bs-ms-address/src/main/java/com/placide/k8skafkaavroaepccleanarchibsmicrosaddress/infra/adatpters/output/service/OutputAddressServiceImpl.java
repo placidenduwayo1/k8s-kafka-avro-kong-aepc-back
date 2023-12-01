@@ -1,13 +1,13 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.service;
 
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Address;
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Company;
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Employee;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Address;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Company;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Employee;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.AddressNotFoundException;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputAddressService;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputRemoteCompanyService;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputRemoteEmployeeService;
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.model.EmployeeModel;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.models.EmployeeModel;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.proxy.CompanyServiceProxy;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.proxy.EmployeeServiceProxy;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.mapper.AddressMapper;

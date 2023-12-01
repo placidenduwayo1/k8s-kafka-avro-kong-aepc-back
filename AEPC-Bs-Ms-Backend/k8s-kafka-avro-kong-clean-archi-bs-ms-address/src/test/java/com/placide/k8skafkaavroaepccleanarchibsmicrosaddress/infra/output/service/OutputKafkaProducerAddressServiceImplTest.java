@@ -1,6 +1,6 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.output.service;
 
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Address;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Address;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.mapper.AddressMapper;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.repository.AddressRepository;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.service.OutputKafkaProducerAddressServiceImpl;
@@ -49,11 +49,15 @@ class OutputKafkaProducerAddressServiceImplTest {
     @Test
     void sendKafkaAddressAddEvent() {
         //PREPARE
-        Address address = new Address(
-                UUID.randomUUID().toString(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes",
-                "France");
+        Address address = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
+
         AddressAvro addressAvro = AddressAvro.newBuilder()
                 .setAddressId(address.getAddressId())
                 .setNum(address.getNum())
@@ -75,11 +79,14 @@ class OutputKafkaProducerAddressServiceImplTest {
     @Test
     void sendKafkaAddressDeleteEvent() {
         //PREPARE
-        Address address = new Address(
-                UUID.randomUUID().toString(),
-                184, "Avenue de Liège",
-                59300, "Valenciennes",
-                "France");
+        Address address = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         AddressAvro addressAvro = AddressMapper.mapBeanToAvro(address);
         Message<?> message = buildKafkaMessage(addressAvro,TOPICS.get(1));
         //EXECUTE
@@ -94,11 +101,15 @@ class OutputKafkaProducerAddressServiceImplTest {
     @Test
     void sendKafkaAddressEditEvent() {
         //PREPARE
-        Address address = new Address(
-                UUID.randomUUID().toString(),
-                44, "Rue Notre Dame des Victoires",
-                74002, "Paris",
-                "France");
+        Address address =
+                new Address.AddressBuilder()
+                        .addressId(UUID.randomUUID().toString())
+                        .num(44)
+                        .street("Rue Notre Dame des Victoires")
+                        .poBox(74002)
+                        .city("Paris")
+                        .country("France")
+                        .build();
         AddressAvro addressAvro = AddressMapper.mapBeanToAvro(address);
         Message<?> message = buildKafkaMessage(addressAvro,TOPICS.get(1));
         //EXECUTE

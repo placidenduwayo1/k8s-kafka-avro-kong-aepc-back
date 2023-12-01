@@ -7,12 +7,12 @@ import org.springframework.beans.BeanUtils;
 public class AddressMapper {
     private AddressMapper(){}
     public static Address toBean(AddressModel model){
-        Address bean = new Address();
+        Address bean = Address.builder().build();
         BeanUtils.copyProperties(model,bean);
         return bean;
     }
     public static AddressModel toModel(Address bean){
-        AddressModel model = new AddressModel();
+        AddressModel model = AddressModel.builder().build();
         BeanUtils.copyProperties(bean, model);
         return model;
     }

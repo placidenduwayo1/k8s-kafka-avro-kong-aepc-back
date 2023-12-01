@@ -3,13 +3,12 @@ package com.placide.k8skafkaavroaepccleanarchibsmicroscompany.infra.adapters.out
 import com.placide.k8skafkaavroaepccleanarchibsmicroscompany.infra.adapters.input.feignclient.models.AddressModel;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder @AllArgsConstructor @NoArgsConstructor @Data
 @Entity
 @Table(name ="companies")
 public class CompanyModel {

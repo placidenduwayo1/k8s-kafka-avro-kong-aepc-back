@@ -46,11 +46,23 @@ class OutputCompanyServiceImplTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         //PREPARE
-        address = new Address(ADDRESS_ID, 2, "Allée de la Haye du Temple", 59160,
-                "Lomme", "France");
+        address = Address.builder()
+                .addressId(ADDRESS_ID)
+                .num(2)
+                .street("Allée de la Haye du Temple")
+                .poBox(59160).city("Lomme")
+                .country("France")
+                .build();
 
-        company = new Company("uuid", "natan", "paris", "esn",
-                new Timestamp(System.currentTimeMillis()).toString(), ADDRESS_ID, address);
+        company = new Company.CompanyBuilder()
+                .companyId("uuid")
+                .name("natan")
+                .agency("paris")
+                .type("esn")
+                .connectedDate(new Timestamp(System.currentTimeMillis()).toString())
+                .addressId(ADDRESS_ID)
+                .address(address)
+                .build();
         companyAvro = CompanyMapper.fromBeanToAvro(company);
     }
 
@@ -76,8 +88,15 @@ class OutputCompanyServiceImplTest {
         Company consumed = underTest.consumeKafkaEventCompanyCreate(companyAvro, TOPIC1);
         CompanyModel model = CompanyMapper.fromBeanToModel(consumed);
         AddressModel addressModel = AddressMapper.toModel(address);
-        CompanyModel expectedModel = new CompanyModel(UUID.randomUUID().toString(), "natan", "lille", "esn",
-                new Timestamp(System.currentTimeMillis()).toString(), ADDRESS_ID, addressModel);
+        CompanyModel expectedModel = CompanyModel.builder()
+                .companyId(UUID.randomUUID().toString())
+                .name("natan")
+                .agency("lille")
+                .type("ens")
+                .connectedDate(new Timestamp(System.currentTimeMillis()).toString())
+                .addressId(ADDRESS_ID)
+                .addressModel(addressModel)
+                .build();
         //EXECUTE
         Mockito.when(repository.save(model)).thenReturn(expectedModel);
         Company saved = underTest.saveCompany(consumed);
@@ -181,8 +200,15 @@ class OutputCompanyServiceImplTest {
     void editCompany() throws CompanyNotFoundException {
         //PREPARE
         String id = "uuid";
-        Company updated = new Company(id, "natan", "Lille", "client",
-                new Timestamp(System.currentTimeMillis()).toString(),ADDRESS_ID, address);
+        Company updated = new Company.CompanyBuilder()
+                .companyId("uuid")
+                .name("natan")
+                .agency("Lille")
+                .type("client")
+                .connectedDate(new Timestamp(System.currentTimeMillis()).toString())
+                .addressId(ADDRESS_ID)
+                .address(address)
+                .build();
         CompanyModel model = CompanyMapper.fromBeanToModel(updated);
         //EXECUTE
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(model));

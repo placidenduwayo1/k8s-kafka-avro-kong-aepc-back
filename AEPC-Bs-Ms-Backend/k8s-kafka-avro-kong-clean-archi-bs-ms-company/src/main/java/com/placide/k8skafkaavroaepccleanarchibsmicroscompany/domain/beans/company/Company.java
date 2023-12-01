@@ -11,17 +11,15 @@ public class Company {
     private String addressId;
     private Address address;
 
-    public Company() {
-    }
 
-    public Company(String companyId, String name, String agency, String type, String connectedDate, String addressId, Address address) {
-        this.companyId = companyId;
-        this.name = name;
-        this.agency = agency;
-        this.type = type;
-        this.connectedDate = connectedDate;
-        this.addressId = addressId;
-        this.address = address;
+    private Company(CompanyBuilder builder) {
+        this.companyId = builder.companyId;
+        this.name = builder.name;
+        this.agency = builder.agency;
+        this.type = builder.type;
+        this.connectedDate = builder.connectedDate;
+        this.addressId = builder.addressId;
+        this.address = builder.address;
     }
 
     public String getCompanyId() {
@@ -90,5 +88,54 @@ public class Company {
                 ", connected-date:" + connectedDate +
                 ", address:" + address +
                 ']';
+    }
+
+    public static class CompanyBuilder {
+        private String companyId;
+        private String name;
+        private String agency;
+        private String type;
+        private String connectedDate;
+        private String addressId;
+        private Address address;
+
+        public CompanyBuilder companyId(String companyId) {
+            this.companyId = companyId;
+            return this;
+        }
+
+        public CompanyBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public CompanyBuilder agency(String agency) {
+            this.agency = agency;
+            return this;
+        }
+
+        public CompanyBuilder type(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public CompanyBuilder connectedDate(String connectedDate) {
+            this.connectedDate = connectedDate;
+            return this;
+        }
+
+        public CompanyBuilder addressId(String addressId) {
+            this.addressId = addressId;
+            return this;
+        }
+
+        public CompanyBuilder address(Address address) {
+            this.address = address;
+            return this;
+        }
+
+        public Company build(){
+            return new Company(this);
+        }
     }
 }

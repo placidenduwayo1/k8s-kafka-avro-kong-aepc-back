@@ -1,6 +1,6 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.input.controller;
 
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Address;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Address;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.AddressAlreadyAssignedCompanyException;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.AddressAlreadyAssignedEmployeeException;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.AddressAlreadyExistsException;
@@ -27,10 +27,14 @@ class AddressControllerTest {
     private InputAddressService inputAddressServiceMock;
     @InjectMocks
     private AddressController underTest;
-    private final Address address = new Address(
-            UUID.randomUUID().toString(),
-            184, "Avenue de Liège",
-            59300, "Valenciennes", "France");
+    private final Address address = new Address.AddressBuilder()
+            .addressId(UUID.randomUUID().toString())
+            .num(184)
+            .street("Avenue de Liège")
+            .poBox(59300)
+            .city("Valenciennes")
+            .country("France")
+            .build();
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -59,10 +63,31 @@ class AddressControllerTest {
     @Test
     void getAllAddresses() {
         //PREPARE
-        List<Address> addresses = List.of(
-                new Address(UUID.randomUUID().toString(),184, "Avenue de Liège",59300, "Valenciennes","France"),
-                new Address(UUID.randomUUID().toString(),44, "Rue Notre Dame des Victoires",74002,"Paris","France"),
-                new Address(UUID.randomUUID().toString(),55, "Avenue Vendredi",91000,"Kibenga","Burundi"));
+        Address address1 = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(59300)
+                .city("Valenciennes")
+                .country("France")
+                .build();
+        Address address2 = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(44)
+                .street("Rue Notre Dame des Victoires")
+                .poBox(75002)
+                .city("Paris")
+                .country("France")
+                .build();
+        Address address3 = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(55)
+                .street("Avenue Vendredi")
+                .poBox(91000)
+                .city("Kibenga")
+                .country("Burundi")
+                .build();
+        List<Address> addresses = List.of(address1, address2, address3);
         //EXECUTE
         Mockito.when(inputAddressServiceMock.getAllAddresses()).thenReturn(addresses);
         List<Address> actualAddresses = underTest.getAllAddresses();
@@ -77,10 +102,14 @@ class AddressControllerTest {
     void getAddress() throws AddressNotFoundException {
         //PREPARE
         String addressId="uuid-001";
-        Address expectedAddress = new Address(
-                UUID.randomUUID().toString(),
-                44, "Rue Notre Dame des Victoires",
-                74002,"Paris","France");
+        Address expectedAddress = new Address.AddressBuilder()
+                        .addressId(UUID.randomUUID().toString())
+                        .num(44)
+                        .street("Rue Notre Dame des Victoires")
+                        .poBox(75002)
+                        .city("Paris")
+                        .country("France")
+                        .build();
         //EXECUTE
         Mockito.when(inputAddressServiceMock.getAddress(addressId)).thenReturn(Optional.of(expectedAddress));
         Address actualAddress = underTest.getAddress(addressId);
@@ -97,10 +126,14 @@ class AddressControllerTest {
     void deleteAddress() throws AddressNotFoundException, AddressAlreadyAssignedCompanyException, AddressAlreadyAssignedEmployeeException {
         //PREPARE
         String addressId="uuid-001";
-        Address expectedAddress = new Address(
-                UUID.randomUUID().toString(),
-                44, "Rue Notre Dame des Victoires",
-                74002,"Paris","France");
+        Address expectedAddress = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(44)
+                .street("Rue Notre Dame des Victoires")
+                .poBox(75002)
+                .city("Paris")
+                .country("France")
+                .build();
         //EXECUTE
         Mockito.when(inputAddressServiceMock.produceAndConsumeAddressDelete(addressId)).thenReturn(expectedAddress);
         ResponseEntity<Object> responseEntity = underTest.deleteAddress(addressId);
@@ -115,14 +148,23 @@ class AddressControllerTest {
     void editAddress() throws AddressNotFoundException {
         //PREPARE
         String addressId="uuid-001";
-        Address expectedAddress = new Address(
-                UUID.randomUUID().toString(),
-                44, "Rue Notre Dame des Victoires",
-                74002,"Paris","France");
-        Address consumedAddress = new Address(
-                UUID.randomUUID().toString(),
-                44, "Rue Notre Dame des Victoires",
-                74002,"Paris","France");
+        Address expectedAddress = new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(44)
+                .street("Rue Notre Dame des Victoires")
+                .poBox(75002)
+                .city("Paris")
+                .country("France")
+                .build();
+
+        Address consumedAddress =new Address.AddressBuilder()
+                .addressId(UUID.randomUUID().toString())
+                .num(44)
+                .street("Rue Notre Dame des Victoires")
+                .poBox(75002)
+                .city("Paris")
+                .country("France")
+                .build();
         AddressDto addressDto = new AddressDto(
                 44, "Rue Notre Dame des Victoires",
                 74002,"Paris","France");

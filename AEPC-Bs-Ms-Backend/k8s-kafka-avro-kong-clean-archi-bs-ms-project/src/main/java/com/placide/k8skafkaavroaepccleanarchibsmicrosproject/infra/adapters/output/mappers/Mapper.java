@@ -15,43 +15,43 @@ public class Mapper {
     }
 
     public static ProjectModel fromTo(Project bean) {
-        ProjectModel model = new ProjectModel();
+        ProjectModel model = ProjectModel.builder().build();
         BeanUtils.copyProperties(bean, model);
         return model;
     }
 
     public static Project fromTo(ProjectModel model) {
-        Project bean = new Project();
+        Project bean = new Project.ProjectBuilder().build();
         BeanUtils.copyProperties(model, bean);
         return bean;
     }
 
     public static Project fromTo(ProjectDto dto) {
-        Project bean = new Project();
+        Project bean = new Project.ProjectBuilder().build();
         BeanUtils.copyProperties(dto, bean);
         return bean;
     }
 
     public static EmployeeModel fromTo(Employee bean) {
-        EmployeeModel model = new EmployeeModel();
+        EmployeeModel model = EmployeeModel.builder().build();
         BeanUtils.copyProperties(bean, model);
         return model;
     }
 
     public static Employee fromTo(EmployeeModel model) {
-        Employee bean = new Employee();
+        Employee bean = Employee.builder().build();
         BeanUtils.copyProperties(model, bean);
         return bean;
     }
 
     public static CompanyModel fromTo(Company bean) {
-        CompanyModel model = new CompanyModel();
+        CompanyModel model = CompanyModel.builder().build();
         BeanUtils.copyProperties(bean, model);
         return model;
     }
 
     public static Company fromTo(CompanyModel model) {
-        Company bean = new Company();
+        Company bean = Company.builder().build();
         BeanUtils.copyProperties(model, bean);
         return bean;
     }
@@ -91,32 +91,36 @@ public class Mapper {
     }
 
     public static Project fromAvroToBean(ProjectAvro projectAvro) {
-        Employee employee = new Employee(
-                projectAvro.getEmployeeId(),
-                projectAvro.getEmployee().getFirstname(),
-                projectAvro.getEmployee().getLastname(),
-                projectAvro.getEmployee().getEmail(),
-                projectAvro.getEmployee().getHireDate(),
-                projectAvro.getEmployee().getState(),
-                projectAvro.getEmployee().getType());
+        Employee employee = Employee.builder()
+                .employeeId(projectAvro.getEmployeeId())
+                .firstname(projectAvro.getEmployee().getFirstname())
+                .lastname(projectAvro.getEmployee().getLastname())
+                .email(projectAvro.getEmployee().getEmail())
+                .hireDate(projectAvro.getEmployee().getHireDate())
+                .state(projectAvro.getEmployee().getState())
+                .type(projectAvro.getEmployee().getType())
+                .build();
 
-        Company company = new Company(
-                projectAvro.getCompanyId(),
-                projectAvro.getCompany().getName(),
-                projectAvro.getCompany().getAgency(),
-                projectAvro.getCompany().getType(),
-                projectAvro.getCompany().getConnectedDate());
+        Company company = Company.builder()
+                .companyId(projectAvro.getCompanyId())
+                .name(projectAvro.getCompany().getName())
+                .agency(projectAvro.getCompany().getAgency())
+                .type(projectAvro.getCompany().getType())
+                .connectedDate(projectAvro.getCompany().getConnectedDate())
+                .build();
 
-        return new Project(
-                projectAvro.getProjectId(),
-                projectAvro.getName(),
-                projectAvro.getDescription(),
-                projectAvro.getPriority(),
-                projectAvro.getState(),
-                projectAvro.getCreatedDate(),
-                projectAvro.getEmployeeId(),
-                employee,
-                projectAvro.getCompanyId(),
-                company);
+
+        return new Project.ProjectBuilder()
+                .projectId(projectAvro.getProjectId())
+                .name(projectAvro.getName())
+                .description(projectAvro.getDescription())
+                .priority(projectAvro.getPriority())
+                .state(projectAvro.getState())
+                .createdDate(projectAvro.getCreatedDate())
+                .employeeId(projectAvro.getEmployeeId())
+                .employee(employee)
+                .companyId(projectAvro.getCompanyId())
+                .company(company)
+                .build();
     }
 }

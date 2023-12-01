@@ -130,10 +130,8 @@ public class CompanyUseCase implements InputCompanyService, InputRemoteAddressSe
             RemoteApiAddressNotLoadedException {
         Company company = getCompanyById(id).orElseThrow(CompanyNotFoundException::new);
         List<Project> projects = outputRemoteProjectService.getRemoteProjectsOfCompany(id);
-        for(Project project: projects){
-            if(!project.getProjectId().equals(ExceptionMsg.COMPANY_ASSIGNED_PROJECT_EXCEPTION.getMessage())){
-                throw new CompanyAlreadyAssignedRemoteProjectsException(ExceptionMsg.COMPANY_ASSIGNED_PROJECT_EXCEPTION.getMessage() + projects);
-            }
+        if(!projects.isEmpty()){
+            throw new CompanyAlreadyAssignedRemoteProjectsException(ExceptionMsg.COMPANY_ASSIGNED_PROJECT_EXCEPTION.getMessage() + projects);
         }
         setCompanyDependency(company, company.getAddressId());
         CompanyAvro companyAvro = CompanyMapper.fromBeanToAvro(company);

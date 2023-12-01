@@ -43,13 +43,30 @@ class OutputEmployeeServiceImplTest {
     private static final String TOPIC3 = "topic3";
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         String nom = "nduwayo";
         String prenom = "placide";
-        address = new Address(ADDRESS_ID, 184, "Avenue de Liège", 59300, "Valenciennes", "France");
-        employee = new Employee(UUID.randomUUID().toString(), prenom, nom, Validator.setEmail(prenom, nom), Timestamp.from(Instant.now()).toString(),"active",
-                "software-engineer", ADDRESS_ID, address);
+        address = Address.builder()
+                .addressId(ADDRESS_ID)
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(5930)
+                .city("Valenciennes")
+                .country("France")
+                .build();
+        employee = new Employee.EmployeeBuilder()
+                .employeeId(UUID.randomUUID().toString())
+                .firstname(prenom)
+                .lastname(nom)
+                .email(Validator.setEmail(prenom, nom))
+                .hireDate(Timestamp.from(Instant.now()).toString())
+                .state("active")
+                .type("software-engineer")
+                .addressId(ADDRESS_ID)
+                .address(address)
+                .build();
+
         employeeAvro = EmployeeMapper.fromBeanToAvro(employee);
     }
 
@@ -59,15 +76,15 @@ class OutputEmployeeServiceImplTest {
         //EXECUTE
         Employee consumed = underTest.consumeKafkaEventEmployeeCreate(employeeAvro, TOPIC1);
         //VERIFY
-        Assertions.assertAll("grp of assertions",()->{
-           Assertions.assertNotNull(consumed);
-           Assertions.assertEquals(consumed.getEmployeeId(),employee.getEmployeeId());
-           Assertions.assertEquals(employee.getEmployeeId(), employeeAvro.getEmployeeId());
+        Assertions.assertAll("grp of assertions", () -> {
+            Assertions.assertNotNull(consumed);
+            Assertions.assertEquals(consumed.getEmployeeId(), employee.getEmployeeId());
+            Assertions.assertEquals(employee.getEmployeeId(), employeeAvro.getEmployeeId());
         });
     }
 
     @Test
-    void saveEmployee()  {
+    void saveEmployee() {
         //PREPARE
         EmployeeModel model = EmployeeMapper.toModel(employee);
         //EXECUTE
@@ -77,20 +94,20 @@ class OutputEmployeeServiceImplTest {
         Employee saved = underTest.saveEmployee(consumed);
         //VERIFY
         Assertions.assertAll("grp of assertions",
-                ()->Mockito.verify(repository).save(consumedModel),
-                ()->Assertions.assertNotNull(saved));
+                () -> Mockito.verify(repository).save(consumedModel),
+                () -> Assertions.assertNotNull(saved));
     }
 
     @Test
     void getEmployeeById() throws EmployeeNotFoundException {
         //PREPARE
-        String employeeId="uuid";
-        EmployeeModel model =EmployeeMapper.toModel(employee);
+        String employeeId = "uuid";
+        EmployeeModel model = EmployeeMapper.toModel(employee);
         //EXECUTE
         Mockito.when(repository.findById(employeeId)).thenReturn(Optional.of(model));
         Employee obtained = underTest.getEmployeeById(employeeId).orElseThrow(EmployeeNotFoundException::new);
         //VERIFY
-        Assertions.assertAll("grp of assertions",()->{
+        Assertions.assertAll("grp of assertions", () -> {
             Mockito.verify(repository, Mockito.atLeast(1)).findById(employeeId);
             Assertions.assertNotNull(obtained);
         });
@@ -107,27 +124,27 @@ class OutputEmployeeServiceImplTest {
         List<Employee> employees = underTest.loadEmployeesByRemoteAddress(ADDRESS_ID);
         //VERIFY
         Assertions.assertAll("grp of assertions",
-                ()->Assertions.assertEquals(1,employees.size()),
-                ()->Mockito.verify(addressServiceProxy).loadRemoteAddressById(ADDRESS_ID),
-                ()->Mockito.verify(repository).findByAddressId(ADDRESS_ID));
+                () -> Assertions.assertEquals(1, employees.size()),
+                () -> Mockito.verify(addressServiceProxy).loadRemoteAddressById(ADDRESS_ID),
+                () -> Mockito.verify(repository).findByAddressId(ADDRESS_ID));
     }
 
     @Test
     void loadEmployeeByInfo() {
         //PREPARE
-        String firstname="Placide";
-        String lastname ="Nduwayo";
-        String state ="active";
-        String type ="software-engineer";
+        String firstname = "Placide";
+        String lastname = "Nduwayo";
+        String state = "active";
+        String type = "software-engineer";
         EmployeeModel model = EmployeeMapper.toModel(employee);
         //EXECUTE
-        Mockito.when(repository.findByFirstnameAndLastnameAndStateAndTypeAndAddressId(firstname,lastname,state,type, ADDRESS_ID))
+        Mockito.when(repository.findByFirstnameAndLastnameAndStateAndTypeAndAddressId(firstname, lastname, state, type, ADDRESS_ID))
                 .thenReturn(List.of(model));
-        List<Employee> employees = underTest.loadEmployeeByInfo(firstname,lastname,state,type, ADDRESS_ID);
+        List<Employee> employees = underTest.loadEmployeeByInfo(firstname, lastname, state, type, ADDRESS_ID);
         //VERIFY
         Assertions.assertAll("grp of assertions",
-                ()->Assertions.assertEquals(1,employees.size()),
-                ()->Mockito.verify(repository).findByFirstnameAndLastnameAndStateAndTypeAndAddressId(firstname,lastname,state,type, ADDRESS_ID)
+                () -> Assertions.assertEquals(1, employees.size()),
+                () -> Mockito.verify(repository).findByFirstnameAndLastnameAndStateAndTypeAndAddressId(firstname, lastname, state, type, ADDRESS_ID)
         );
     }
 
@@ -137,22 +154,22 @@ class OutputEmployeeServiceImplTest {
         EmployeeModel model = EmployeeMapper.toModel(employee);
         //EXECUTE
         Mockito.when(repository.findAll()).thenReturn(List.of(model));
-        List<Employee>employees = underTest.loadAllEmployees();
+        List<Employee> employees = underTest.loadAllEmployees();
         //VERIFY
         Assertions.assertAll("grp of assertions",
-                ()->Assertions.assertEquals(1,employees.size()),
-                ()->Mockito.verify(repository).findAll()
+                () -> Assertions.assertEquals(1, employees.size()),
+                () -> Mockito.verify(repository).findAll()
         );
     }
 
     @Test
-    void consumeKafkaEventEmployeeDelete(){
+    void consumeKafkaEventEmployeeDelete() {
         //PREPARE
 
         //EXECUTE
-        Employee consumed = underTest.consumeKafkaEventEmployeeDelete(employeeAvro,TOPIC2);
+        Employee consumed = underTest.consumeKafkaEventEmployeeDelete(employeeAvro, TOPIC2);
         //VERIFY
-        Assertions.assertAll("assertions",()->{
+        Assertions.assertAll("assertions", () -> {
             Assertions.assertEquals(consumed.getEmployeeId(), employee.getEmployeeId());
             Assertions.assertEquals(consumed.getAddress().getCity(), employee.getAddress().getCity());
             Assertions.assertEquals(consumed.getAddress().getCountry(), employee.getAddress().getCountry());
@@ -162,7 +179,7 @@ class OutputEmployeeServiceImplTest {
     @Test
     void deleteEmployee() throws EmployeeNotFoundException, RemoteApiAddressNotLoadedException {
         //PREPARE
-        String employeeId ="uuid";
+        String employeeId = "uuid";
         EmployeeModel employeeModel = EmployeeMapper.toModel(employee);
         AddressModel addressModel = AddressMapper.toModel(address);
         //EXECUTE
@@ -172,7 +189,7 @@ class OutputEmployeeServiceImplTest {
         String msg = underTest.deleteEmployee(employeeId);
 
         //VERIFY
-        Assertions.assertAll("grp of assertions",()->{
+        Assertions.assertAll("grp of assertions", () -> {
             Assertions.assertNotNull(obtained);
             Mockito.verify(repository, Mockito.atLeast(1)).findById(employeeId);
             Assertions.assertNotNull(msg);
@@ -183,7 +200,7 @@ class OutputEmployeeServiceImplTest {
     void consumeKafkaEventEmployeeEdit() {
         //PREPARE
         //EXECUTE
-        Employee consumed = underTest.consumeKafkaEventEmployeeEdit(employeeAvro,TOPIC3);
+        Employee consumed = underTest.consumeKafkaEventEmployeeEdit(employeeAvro, TOPIC3);
         //VERIFY
         Assertions.assertNotNull(consumed);
     }
@@ -191,24 +208,33 @@ class OutputEmployeeServiceImplTest {
     @Test
     void editEmployee() throws EmployeeNotFoundException {
         //PREPARE
-        String firstname="Placide";
-        String lastname ="Nduwayo";
-        Employee updated = new Employee(employee.getEmployeeId(),firstname, lastname, Validator.setEmail(firstname, lastname),
-                employee.getHireDate(),"active", "software-engineer", ADDRESS_ID, address);
+        String firstname = "Placide";
+        String lastname = "Nduwayo";
+        Employee updated = new Employee.EmployeeBuilder()
+                .employeeId(employee.getEmployeeId())
+                .firstname(firstname)
+                .lastname(lastname)
+                .email(Validator.setEmail(firstname,lastname))
+                .hireDate(employee.getHireDate())
+                .state("active")
+                .type("software-engineer")
+                .addressId(ADDRESS_ID)
+                .address(address)
+                .build();
         EmployeeModel model = EmployeeMapper.toModel(updated);
-        String id="uuid";
+        String id = "uuid";
         //EXECUTE
         Mockito.when(repository.findById(id)).thenReturn(Optional.of(model));
         Employee obtained = underTest.getEmployeeById(id).orElseThrow(EmployeeNotFoundException::new);
-        Employee consumed = underTest.consumeKafkaEventEmployeeEdit(employeeAvro,TOPIC3);
+        Employee consumed = underTest.consumeKafkaEventEmployeeEdit(employeeAvro, TOPIC3);
         Mockito.when(repository.save(EmployeeMapper.toModel(consumed))).thenReturn(model);
         Employee saved = underTest.editEmployee(consumed);
         //VERIFY
         Assertions.assertAll("grp of assertions",
-                ()->Mockito.verify(repository, Mockito.atLeast(1)).findById(id),
-                ()->Mockito.verify(repository, Mockito.atLeast(1)).save(EmployeeMapper.toModel(consumed)),
-                ()->Assertions.assertNotNull(saved),
-                ()->Assertions.assertNotNull(obtained)
+                () -> Mockito.verify(repository, Mockito.atLeast(1)).findById(id),
+                () -> Mockito.verify(repository, Mockito.atLeast(1)).save(EmployeeMapper.toModel(consumed)),
+                () -> Assertions.assertNotNull(saved),
+                () -> Assertions.assertNotNull(obtained)
         );
     }
 
@@ -218,25 +244,25 @@ class OutputEmployeeServiceImplTest {
         AddressModel model = AddressMapper.toModel(address);
         //EXECUTE
         Mockito.when(addressServiceProxy.loadRemoteAddressById(ADDRESS_ID)).thenReturn(model);
-       Address obtained = underTest.getRemoteAddressById(ADDRESS_ID);
+        Address obtained = underTest.getRemoteAddressById(ADDRESS_ID);
         //VERIFY
         Assertions.assertAll("grp of assertions",
-                ()->Mockito.verify(addressServiceProxy).loadRemoteAddressById(ADDRESS_ID),
-                ()->Assertions.assertNotNull(obtained));
+                () -> Mockito.verify(addressServiceProxy).loadRemoteAddressById(ADDRESS_ID),
+                () -> Assertions.assertNotNull(obtained));
     }
 
     @Test
     void loadAllRemoteAddresses() {
         //PREPARE
-        List<Address> addresses = List.of(address,address,address);
+        List<Address> addresses = List.of(address, address, address);
         List<AddressModel> models = addresses.stream().map(AddressMapper::toModel).toList();
         //EXECUTE
         Mockito.when(addressServiceProxy.loadAllRemoteAddresses()).thenReturn(models);
         List<Address> obtained = underTest.loadAllRemoteAddresses();
         //VERIFY
         Assertions.assertAll("grp of assertions",
-                ()->Mockito.verify(addressServiceProxy).loadAllRemoteAddresses(),
-                ()->Assertions.assertFalse(obtained.isEmpty()),
-                ()->Assertions.assertEquals(3,obtained.size()));
+                () -> Mockito.verify(addressServiceProxy).loadAllRemoteAddresses(),
+                () -> Assertions.assertFalse(obtained.isEmpty()),
+                () -> Assertions.assertEquals(3, obtained.size()));
     }
 }

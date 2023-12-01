@@ -1,7 +1,7 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicroscompany.infra.adapters.input.feignclient.models;
 
 import lombok.*;
-@Data @AllArgsConstructor @NoArgsConstructor @Builder @ToString
+@Builder @Data
 public class ProjectModel {
     private String projectId;
     private String name;

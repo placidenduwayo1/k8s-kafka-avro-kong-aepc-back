@@ -15,21 +15,17 @@ public class Project {
     private String companyId;
     private Company company;
 
-    public Project() {
-    }
-
-    public Project(String projectId, String name, String description, int priority, String state, String createdDate,
-                   String employeeId, Employee employee, String companyId, Company company) {
-        this.projectId = projectId;
-        this.name = name;
-        this.description = description;
-        this.priority = priority;
-        this.state = state;
-        this.createdDate = createdDate;
-        this.employeeId = employeeId;
-        this.employee = employee;
-        this.companyId = companyId;
-        this.company = company;
+    private Project(ProjectBuilder builder) {
+        this.projectId = builder.projectId;
+        this.name = builder.name;
+        this.description = builder.description;
+        this.priority = builder.priority;
+        this.state = builder.state;
+        this.createdDate = builder.createdDate;
+        this.employeeId = builder.employeeId;
+        this.employee = builder.employee;
+        this.companyId = builder.companyId;
+        this.company = builder.company;
     }
 
     public String getProjectId() {
@@ -124,5 +120,72 @@ public class Project {
                 ", employee:" + employee +
                 ", company:" + company +
                 ']';
+    }
+
+    public static class ProjectBuilder {
+        private String projectId;
+        private String name;
+        private String description;
+        private int priority;
+        private String state;
+        private String createdDate;
+        private String employeeId;
+        private Employee employee;
+        private String companyId;
+        private Company company;
+
+        public ProjectBuilder projectId(String projectId) {
+            this.projectId = projectId;
+            return this;
+        }
+
+        public ProjectBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public ProjectBuilder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public ProjectBuilder priority(int priority) {
+            this.priority = priority;
+            return this;
+        }
+
+        public ProjectBuilder state(String state) {
+            this.state = state;
+            return this;
+        }
+
+        public ProjectBuilder createdDate(String createdDate) {
+            this.createdDate = createdDate;
+            return this;
+        }
+
+        public ProjectBuilder employeeId(String employeeId) {
+            this.employeeId = employeeId;
+            return this;
+        }
+
+        public ProjectBuilder employee(Employee employee) {
+            this.employee = employee;
+            return this;
+        }
+
+        public ProjectBuilder companyId(String companyId) {
+            this.companyId = companyId;
+            return this;
+        }
+
+        public ProjectBuilder company(Company company) {
+            this.company = company;
+            return this;
+        }
+
+        public Project build(){
+            return new Project(this);
+        }
     }
 }

@@ -57,12 +57,26 @@ class OutputKafkaProducerEmployeeServiceImplTest {
         log.info("list of kafka container brokers: {}", bootstrapServers);
         System.setProperty("kafka.bootstrapAddress", bootstrapServers);
 
-        address = new Address(ADDRESS_ID, 184, "Avenue de Liège", 59300,
-                "Valenciennes", "France");
+        address = Address.builder()
+                .addressId(ADDRESS_ID)
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(5930)
+                .city("Valenciennes")
+                .country("France")
+                .build();
 
-        employee = new Employee(
-                UUID.randomUUID().toString(), "Placide", "Nduwayo", "placide.nduwayo@domain.com",
-                Timestamp.from(Instant.now()).toString(), "active", "software-engineer", "null-address-id", address);
+        employee = new Employee.EmployeeBuilder()
+                .employeeId(UUID.randomUUID().toString())
+                .firstname("Placide")
+                .lastname("Nduwayo")
+                .email("placide.nduwayo@domain.com")
+                .hireDate(Timestamp.from(Instant.now()).toString())
+                .state("active")
+                .type("software-engineer")
+                .addressId("null-address-id")
+                .address(address)
+                .build();
         employeeAvro = EmployeeMapper.fromBeanToAvro(employee);
     }
 
@@ -100,14 +114,27 @@ class OutputKafkaProducerEmployeeServiceImplTest {
     void produceKafkaEventEmployeeEdit() throws RemoteApiAddressNotLoadedException {
         //PREPARE
         String employeeId = "uuid-1";
-        String addressId = "uuid-2";
-        Employee bean = new Employee(
-                employeeId, "Placide", "Nduwayo", "placide.nduwayo@domain.com",
-                Timestamp.from(Instant.now()).toString(), "active", "software-engineer", "null-address-id", address);
+        Employee bean = new Employee.EmployeeBuilder()
+                .employeeId(UUID.randomUUID().toString())
+                .firstname("Placide")
+                .lastname("Nduwayo")
+                .email("placide.nduwayo@domain.com")
+                .hireDate(Timestamp.from(Instant.now()).toString())
+                .state("active")
+                .type("software-engineer")
+                .addressId("null-address-id")
+                .address(address)
+                .build();
         EmployeeAvro avro = EmployeeMapper.fromBeanToAvro(bean);
         Message<?> message = buildKafkaMessage(avro, TOPICS.get(2));
-        AddressModel addressModel = new AddressModel(addressId, 184, "Avenue de Liège", 59300,
-                "Valenciennes", "France");
+        AddressModel addressModel = AddressModel.builder()
+                .addressId(ADDRESS_ID)
+                .num(184)
+                .street("Avenue de Liège")
+                .poBox(5930)
+                .city("Valenciennes")
+                .country("France")
+                .build();
         EmployeeModel employeeModel = EmployeeMapper.toModel(bean);
         //EXECUTE
         Mockito.when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(employeeModel));
@@ -118,14 +145,7 @@ class OutputKafkaProducerEmployeeServiceImplTest {
         Assertions.assertAll("gpe of assertions",()->{
             Mockito.verify(employeeAvroKafkaTemplate).send(message);
             Assertions.assertNotNull(actual);
-            Assertions.assertEquals(actual.getEmployeeId(),avro.getEmployeeId());
-            Assertions.assertEquals(actual.getFirstname(),avro.getFirstname());
-            Assertions.assertEquals(actual.getLastname(),avro.getLastname());
-            Assertions.assertEquals(actual.getEmail(),avro.getEmail());
-            Assertions.assertEquals(actual.getState(),avro.getState());
-            Assertions.assertEquals(actual.getType(),avro.getType());
-            Assertions.assertEquals(actual.getHireDate(),avro.getHireDate());
-            Assertions.assertEquals(actual.getAddress(),avro.getAddress());
+            Assertions.assertEquals(actual.toString(),avro.toString());
         });
     }
     private Message<?> buildKafkaMessage(EmployeeAvro payload, String topic) {

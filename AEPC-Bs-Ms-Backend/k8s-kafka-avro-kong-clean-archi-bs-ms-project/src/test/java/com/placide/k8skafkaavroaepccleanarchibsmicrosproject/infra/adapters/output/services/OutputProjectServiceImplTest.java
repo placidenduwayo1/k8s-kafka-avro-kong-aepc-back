@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -48,11 +49,34 @@ class OutputProjectServiceImplTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        employee = new Employee(EMPLOYEE_ID, "Placide", "Nduwayo", "placide.nduwayo@natan.fr", "2020-10-27:00:00:00",
-                "active", "software-engineer");
-        company = new Company(COMPANY_ID, "Natan", "Paris", "esn", "company-creation");
-        project = new Project(PROJECT_ID, "Guppy", "outil d'aide au business analyst (BA) à la rédaction des us",
-                1, "ongoing", Instant.now().toString(), EMPLOYEE_ID, employee, COMPANY_ID, company);
+        employee = Employee.builder()
+                .employeeId(EMPLOYEE_ID)
+                .firstname("Placide")
+                .lastname("Nduwayo")
+                .email("placide.nduwayo@natan.fr")
+                .hireDate("2020-10-27:00:00:00")
+                .state("active")
+                .type("software-engineer")
+                .build();
+        company = Company.builder()
+                .companyId(COMPANY_ID)
+                .name("Natan")
+                .agency("Paris")
+                .type("esn")
+                .connectedDate("company-connected")
+                .build();
+        project = new Project.ProjectBuilder()
+                .projectId(PROJECT_ID)
+                .name("Guppy")
+                .description("outil d'aide au business analyse de la production des besoins techniques")
+                .priority(1)
+                .state("ongoing")
+                .createdDate(Timestamp.from(Instant.now()).toString())
+                .employeeId(EMPLOYEE_ID)
+                .employee(employee)
+                .companyId(COMPANY_ID)
+                .company(company)
+                .build();
     }
 
     @Test
@@ -145,10 +169,12 @@ class OutputProjectServiceImplTest {
         Project consumed = underTest.consumeKafkaEventProjectDelete(avro, TOPIC2);
         String msg = underTest.deleteProject(consumed.getProjectId());
         //VERIFY
-        Assertions.assertAll("gpe of assertions",
-                () -> Assertions.assertNotNull(msg),
-                () -> Assertions.assertEquals("project <" + consumed + "> is deleted", msg),
-                () -> Mockito.verify(repository).deleteById(PROJECT_ID));
+        Assertions.assertAll("gpe of assertions",()->{
+            Assertions.assertNotNull(msg);
+            Assertions.assertEquals("project <" + consumed + "> is deleted", msg);
+            Mockito.verify(repository).deleteById(consumed.getProjectId());
+            Assertions.assertNotNull(consumed);
+        });
     }
 
     @Test

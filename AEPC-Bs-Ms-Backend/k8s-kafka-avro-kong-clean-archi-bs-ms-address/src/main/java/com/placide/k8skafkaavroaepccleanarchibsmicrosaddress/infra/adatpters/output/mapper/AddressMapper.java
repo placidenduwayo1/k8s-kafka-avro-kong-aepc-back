@@ -1,6 +1,6 @@
 package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.mapper;
 
-import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.bean.Address;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans.Address;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.models.AddressModel;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.output.models.AddressDto;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.avrobean.AddressAvro;
@@ -11,19 +11,19 @@ public class AddressMapper {
     }
 
     public static Address mapModelToBean(AddressModel addressModel) {
-        Address address = new Address();
+        Address address = new Address.AddressBuilder().build();
         BeanUtils.copyProperties(addressModel, address);
         return address;
     }
 
     public static AddressModel mapBeanToModel(Address address) {
-        AddressModel addressModel = new AddressModel();
+        AddressModel addressModel = AddressModel.builder().build();
         BeanUtils.copyProperties(address, addressModel);
         return addressModel;
     }
 
     public static Address mapDtoToBean(AddressDto addressDto) {
-        Address address = new Address();
+        Address address = new Address.AddressBuilder().build();
         BeanUtils.copyProperties(addressDto, address);
         return address;
     }
@@ -46,11 +46,13 @@ public class AddressMapper {
     }
 
     public static Address mapAvroToBean(AddressAvro addressAvro) {
-        return new Address(addressAvro.getAddressId(),
-                addressAvro.getNum(),
-                addressAvro.getStreet(),
-                addressAvro.getPoBox(),
-                addressAvro.getCity(),
-                addressAvro.getCountry());
+        return new Address.AddressBuilder()
+                .addressId(addressAvro.getAddressId())
+                .num(addressAvro.getNum())
+                .street(addressAvro.getStreet())
+                .poBox(addressAvro.getPoBox())
+                .city(addressAvro.getCity())
+                .country(addressAvro.getCountry())
+                .build();
     }
 }
