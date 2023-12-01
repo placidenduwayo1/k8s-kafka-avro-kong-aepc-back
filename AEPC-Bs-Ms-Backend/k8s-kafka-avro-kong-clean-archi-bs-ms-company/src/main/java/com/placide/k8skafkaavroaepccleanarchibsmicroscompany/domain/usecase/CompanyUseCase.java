@@ -57,7 +57,8 @@ public class CompanyUseCase implements InputCompanyService, InputRemoteAddressSe
         List<String> addressesIds = new ArrayList<>();
         companies.forEach(company -> addressesIds.add(company.getAddressId()));
         if(addressesIds.contains(addressId)){
-            throw new RemoteAddressAlreadyHoldsCompanyException();
+            throw new RemoteAddressAlreadyHoldsCompanyException(ExceptionMsg.REMOTE_ADDRESS_ALREADY_HOLDS_COMPANY_EXCEPTION
+                    .getMessage());
         }
     }
 
@@ -131,7 +132,8 @@ public class CompanyUseCase implements InputCompanyService, InputRemoteAddressSe
         Company company = getCompanyById(id).orElseThrow(CompanyNotFoundException::new);
         List<Project> projects = outputRemoteProjectService.getRemoteProjectsOfCompany(id);
         if(!projects.isEmpty()){
-            throw new CompanyAlreadyAssignedRemoteProjectsException(ExceptionMsg.COMPANY_ASSIGNED_PROJECT_EXCEPTION.getMessage() + projects);
+            throw new CompanyAlreadyAssignedRemoteProjectsException(ExceptionMsg.COMPANY_ASSIGNED_PROJECT_EXCEPTION
+                    .getMessage() + projects);
         }
         setCompanyDependency(company, company.getAddressId());
         CompanyAvro companyAvro = CompanyMapper.fromBeanToAvro(company);
@@ -152,13 +154,19 @@ public class CompanyUseCase implements InputCompanyService, InputRemoteAddressSe
     }
     @Override
     public Company produceKafkaEventCompanyEdit(CompanyDto payload, String id) throws CompanyNotFoundException,
-            CompanyTypeInvalidException, CompanyEmptyFieldsException, RemoteApiAddressNotLoadedException, RemoteAddressAlreadyHoldsCompanyException {
+            CompanyTypeInvalidException, CompanyEmptyFieldsException, RemoteApiAddressNotLoadedException,
+            RemoteAddressAlreadyHoldsCompanyException {
         Validator.format(payload);
         checkPayloadValidity(payload);
         Company company = getCompanyById(id).orElseThrow(CompanyNotFoundException::new);
         List<String> addressesIDs = loadAddressesIds(loadAllCompanies());
+        Company companyOnAddressId = null;
         if(addressesIDs.contains(payload.getAddressId()) && !company.getAddressId().equals(payload.getAddressId())){
-            throw new RemoteAddressAlreadyHoldsCompanyException();
+            companyOnAddressId = getCompanyOfGivenAddressId(payload.getAddressId());
+        }
+        if(companyOnAddressId!=null){
+            throw new RemoteAddressAlreadyHoldsCompanyException(ExceptionMsg.REMOTE_ADDRESS_ALREADY_HOLDS_COMPANY_EXCEPTION
+                    .getMessage()+companyOnAddressId);
         }
         company.setName(payload.getName());
         company.setAgency(payload.getAgency());

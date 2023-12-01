@@ -37,8 +37,7 @@ public class CompanyBusinessExceptionHandler {
         return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
     }
     @ExceptionHandler(value = RemoteAddressAlreadyHoldsCompanyException.class)
-    public ResponseEntity<String> handleRemoteAddressAlreadyHoldsCompanyException(){
-        return new ResponseEntity<>(ExceptionMsg.REMOTE_ADDRESS_ALREADY_HOLDS_COMPANY_EXCEPTION
-                .getMessage(), HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity<String> handleRemoteAddressAlreadyHoldsCompanyException(RemoteAddressAlreadyHoldsCompanyException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_ACCEPTABLE);
     }
 }
