@@ -2,17 +2,14 @@ package com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.beans;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
-@Data
-@Builder
+@Builder @Data
 public class Company {
     private String companyId;
     private String name;
     private String agency;
     private String type;
     private String connectedDate;
-
     @Override
     public String toString() {
         return "Company-API:[" +
