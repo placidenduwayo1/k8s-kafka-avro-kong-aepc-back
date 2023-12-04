@@ -7,7 +7,7 @@ import org.springframework.beans.BeanUtils;
 public class CompanyMapper {
     private CompanyMapper(){}
     public static Company toBean(CompanyModel model){
-        Company bean = new Company.CompanyBuilder().build();
+        Company bean = Company.builder().build();
         BeanUtils.copyProperties(model,bean);
         return bean;
     }
