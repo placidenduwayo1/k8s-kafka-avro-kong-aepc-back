@@ -82,8 +82,8 @@
   - k8s-kafka-avro-kong-bs-ms-project
 
 all those docker containers are deployed into a **kubernetes minikube cluster**.
-- in the folder **Kubernetes-Container-Orch** contains all k8s deployments.
-- in the first time, i deployed **kong-api-geteway** in declarative mode: file **kong-api-gateway-declarative-mode.yaml**
+- in the folder **Kubernetes-Container-Orch** contains k8s deployments of all containers of the application.
+- in the first time, **kong-api-geteway** is deployed in declarative mode:**kong-api-gateway-declarative-mode.yaml**
  
 ### summary (CI-DC)
 ![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/dcf3f67e-4330-4563-91d5-947703e92ade)
@@ -120,13 +120,13 @@ all those docker containers are deployed into a **kubernetes minikube cluster**.
 
 After creating Kong objects ing Kong-dashboard, we access to endepoints via kong api gateway
 
-kong-api-gateway url: **http://localhost:8002/**
+kong-api-gateway url: **http://192.168.49.2:30800/**
 
   ## address-microservice
 
 list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-address:  
-  - [GET]```http://localhost:8002/address-api/```  
-  - [POST]```http://localhost:8002/addresses```    
+  - [GET]```http://192.168.49.2:30800/address-api/```  
+  - [POST]```http://192.168.49.2:30800/addresses```    
     ***payload***:  
       ```
       {
@@ -137,11 +137,11 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-address:
         coutry: string value
       }
       ```  
-    - [GET]```http://localhost:8002/address-api/addresses```  
-    - [GET]```http://localhost:8002/address-api/addresses/id/{value of address id}```  
-    - [DELETE]```http://localhost:8002/address-api/addresses/id/{value of address id}```  
+    - [GET]```http://192.168.49.2:30800/address-api/addresses```  
+    - [GET]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
+    - [DELETE]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
     **Note**: address cannot be removed when it is aleardy assigned  employee or company   
-    - [PUT]```http://localhost:8002/address-api/addresses/id/{value of address id}```  
+    - [PUT]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
       ***payload***:  
         ```
         {
@@ -154,8 +154,8 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-address:
         ```  
 ## company-microservice
 list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-company pod:  
-  - [GET] ```http://http://localhost:8002/company-api/```  
-  - [POST]```http://localhost:8002/company-api/companies```  
+  - [GET] ```http://http://192.168.49.2:30800/company-api/```  
+  - [POST]```http://192.168.49.2:30800/company-api/companies```  
       ***payload***:
       ```
       {
@@ -166,14 +166,14 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-company pod:
       }
       ```  
   **Note**: cannot create company on address that already holds another company  
-  - [GET] ```http://localhost:8002/company-api/companies```  
-  - [GET] ```http://localhost:8002/company-api/addresses/id/{address-id}```  
-  - [GET] ```http://localhost:8002/company-api/addresses/city/{city}```  
-  - [DELETE] ```http://localhost:8002/company-api/companies/id/{company-id}```   
+  - [GET] ```http://192.168.49.2:30800/company-api/companies```  
+  - [GET] ```http://192.168.49.2:30800/company-api/addresses/id/{address-id}```  
+  - [GET] ```http://192.168.49.2:30800/company-api/addresses/city/{city}```  
+  - [DELETE] ```http://192.168.49.2:30800/company-api/companies/id/{company-id}```   
   **Note**: cannot delete company holds project(s)  
-  - [GET] ```http://localhost:8002/company-api/companies/name/{company-name}```
-  - [GET] ```http://localhost:8002/company-api/companies/agency/{company-agency}```
-  - [PUT] ```http://localhost:8002/company-api/companies/id/{company-id}```  
+  - [GET] ```http://192.168.49.2:30800/company-api/companies/name/{company-name}```
+  - [GET] ```http://192.168.49.2:30800/company-api/companies/agency/{company-agency}```
+  - [PUT] ```http://192.168.49.2:30800/company-api/companies/id/{company-id}```  
     ***payload***:
     ```
     {
@@ -186,8 +186,8 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-company pod:
   **Note**: cannot update company on address holding another company  
 ## employee-microservice 
 list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-employee pod:  
-  - [GET] ```http://localhost:8002/employee-api/```  
-  - [POST]```http://localhost:8002/employee-api/employees```  
+  - [GET] ```http://192.168.49.2:30800/employee-api/```  
+  - [POST]```http://192.168.49.2:30800/employee-api/employees```  
   ***payload***:  
   ```
   {
@@ -198,12 +198,12 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-employee pod:
     address-id: string value
   }
   ```  
-  - [GET] ```http://localhost:8002/employee-api/employees```  
-  - [GET] ```http://localhost:8002/employee-api/employees/id/{employee-id}```  
-  - [GET] ```http://localhost:8002/employee-api/employees/lastname/{lastname}```  
-  - [DELETE] ```http://localhost:8002/employee-api/employees/id/{employee-id}```  
+  - [GET] ```http://192.168.49.2:30800/employee-api/employees```  
+  - [GET] ```http://192.168.49.2:30800/employee-api/employees/id/{employee-id}```  
+  - [GET] ```http://192.168.49.2:30800/employee-api/employees/lastname/{lastname}```  
+  - [DELETE] ```http://192.168.49.2:30800/employee-api/employees/id/{employee-id}```  
   **Note**: cannot delete employee already assigned project(s)  
-  - [PUT] ```http://localhost:8002/employee-api/employees/id/{employee-id}```   
+  - [PUT] ```http://192.168.49.2:30800/employee-api/employees/id/{employee-id}```   
   ***payload:***  
   ```
   {
@@ -214,14 +214,14 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-employee pod:
     address-id: string value
   }
   ```  
-  - [GET] ```http://localhost:8002/employee-api/employees/addresses/id/{address-id}```: employees living at given address  
-  - [GET] ```http://localhost:8002/employee-api/employees/addresses/city/{address-id}```: employees living at given address city  
+  - [GET] ```http://192.168.49.2:30800/employee-api/employees/addresses/id/{address-id}```: employees living at given address  
+  - [GET] ```http://192.168.49.2:30800/employee-api/employees/addresses/city/{address-id}```: employees living at given address city  
 
 **Note:** for [POST] and [PUT], ***address-id***, employee ms sends request to address ms to ask address related to address-id. a resilience is managed if address ms is down
 ## project-microservice
 list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-project pod:  
-  - [GET] ```http://localhost:8002/project-api/``  
-  - [POST]```http://localhost:8002/project-api/projects```    
+  - [GET] ```http://192.168.49.2:30800/project-api/``  
+  - [POST]```http://192.168.49.2:30800/project-api/projects```    
   ***payload:***  
   ```
   {
@@ -234,11 +234,11 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-project pod:
   }
   ```  
   **Note**: cannot create project for archived employee  
-  - [GET] ```http://localhost:8002/project-api/projects```  
-  - [GET] ```http://localhost:8002/project-api/projects/{project-id}```  
-  - [DELETE] ```localhost:8002/project-api/projects/{value of project id}```  
+  - [GET] ```http://192.168.49.2:30800/project-api/projects```  
+  - [GET] ```http://192.168.49.2:30800/project-api/projects/{project-id}```  
+  - [DELETE] ```192.168.49.2:30800/project-api/projects/{value of project id}```  
   **Note**: cannot delete project aleardy assigned to employee or company  
-  - [PUT] ```http://localhost:8002/project-api/projects/{value of project id}```  
+  - [PUT] ```http://192.168.49.2:30800/project-api/projects/{value of project id}```  
   **Note**: cannot update project on archived employee  
   ***payload:***  
   ```
@@ -251,10 +251,10 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-project pod:
     company-id: string value
   }
   ```  
-  - [GET] ```http://localhost:8002/project-api/projects/employees/id/{employee-id}```: list of projects assigned to a given unique employee  
-  - [GET] ```http://localhost:8002/project-api/projects/employees/lastname/{employee-lastname}```: list of projects assigned to given employees lastname  
-  - [GET] ```http://localhost:8002/project-api/projects/companies/id/{company-id}```: list of projects assigned to a given unque company  
-  - [GET] ```http://localhost:8002/project-api/projects/companies/name/{company-name}```: list of projects assigned to a given company name with all agencies  
-  - [GET] ```http://localhost:8002/project-api/projects/companies/agency/{company-agency}```: list of projects assigned to a given company's agency  
+  - [GET] ```http://192.168.49.2:30800/project-api/projects/employees/id/{employee-id}```: list of projects assigned to a given unique employee  
+  - [GET] ```http://192.168.49.2:30800/project-api/projects/employees/lastname/{employee-lastname}```: list of projects assigned to given employees lastname  
+  - [GET] ```http://192.168.49.2:30800/project-api/projects/companies/id/{company-id}```: list of projects assigned to a given unque company  
+  - [GET] ```http://192.168.49.2:30800/project-api/projects/companies/name/{company-name}```: list of projects assigned to a given company name with all agencies  
+  - [GET] ```http://192.168.49.2:30800/project-api/projects/companies/agency/{company-agency}```: list of projects assigned to a given company's agency  
 
 **Note:** for [POST] and [PUT], ***employee-id, company-id***, project ms sends request to eployee and company ms to ask employee and company related to employee-id and company-id. a resilience is managed if theses ms are down
