@@ -39,8 +39,8 @@ public class OutputAddressServiceImpl implements OutputAddressService, OutputRem
     private final  EmployeeServiceProxy employeeServiceProxy;
 
     public OutputAddressServiceImpl(AddressRepository addressRepository,
-                                    @Qualifier(value = "company-service-proxy") CompanyServiceProxy companyServiceProxy,
-                                    @Qualifier(value = "employee-service-proxy") EmployeeServiceProxy employeeServiceProxy) {
+                                    @Qualifier("companyserviceproxy") CompanyServiceProxy companyServiceProxy,
+                                    @Qualifier("employeeserviceproxy") EmployeeServiceProxy employeeServiceProxy) {
         this.addressRepository = addressRepository;
         this.companyServiceProxy = companyServiceProxy;
         this.employeeServiceProxy = employeeServiceProxy;

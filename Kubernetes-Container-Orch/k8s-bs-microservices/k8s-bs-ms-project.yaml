@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-kafka-avro-kong-bs-ms-project
+  labels:
+    app: k8s-kafka-avro-kong-bs-ms-project
+  namespace: placide-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: k8s-kafka-avro-kong-bs-ms-project
+  template:
+    metadata:
+      name: k8s-kafka-avro-kong-bs-ms-project
+      labels:
+        app: k8s-kafka-avro-kong-bs-ms-project
+    spec:
+      serviceAccountName: placide-svc-account
+      initContainers:
+        - name: ms-config-svc-ready-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z kong-microservices-config-service 8280; do echo waiting for kong-microservices-config-service ready; sleep 5; done;'
+        - name: persistence-db-ready-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z mysql-ms-dbs 3306; do echo waiting for database to be ready; sleep 5; done;'
+        - name: kafkabroker1-ready-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z kafka-broker-1 9092; do echo waiting for kafka-broker-1 ready; sleep 5; done;'
+        - name: kafkabroker2-ready-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z kafka-broker-2 9093; do echo waiting for kafka-broker-2 ready; sleep 5; done;'
+        - name: kafkabroker3-ready-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z kafka-broker-3 9094; do echo waiting for kafka-broker-3 ready; sleep 5; done;'
+      containers:
+        - name: k8s-kafka-avro-kong-bs-ms-project
+          image: placidenduwayo1/k8s-kafka-avro-kong-bs-ms-project:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8684
+              hostPort: 8684
+              name: ms-project-port
+          env:
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              valueFrom:
+                configMapKeyRef:
+                  name: placide-services-env-variables-cm
+                  key: bootstrap_servers_keys
+          startupProbe:
+            httpGet:
+              port: ms-project-port
+              path: /bs-ms-project-api
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: ms-project-port
+              path: /bs-ms-project-api
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              port: ms-project-port
+              path: /bs-ms-project-api
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8s-kafka-avro-kong-bs-ms-project
+  labels:
+    app: k8s-kafka-avro-kong-bs-ms-project
+  namespace: placide-ns
+spec:
+  selector:
+    app: k8s-kafka-avro-kong-bs-ms-project
+  ports:
+    - port: 8684
+      protocol: TCP
+      targetPort: 8684
+      nodePort: 30684
+      name: ms-project-port
+  type: LoadBalancer

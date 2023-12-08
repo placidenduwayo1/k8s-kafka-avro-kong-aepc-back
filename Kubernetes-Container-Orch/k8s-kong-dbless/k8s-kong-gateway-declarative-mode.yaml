@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-api-gateway
+  labels:
+    app: kong-api-gateway
+  namespace: placide-ns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kong-api-gateway
+  template:
+    metadata:
+      name: kong-api-gateway
+      labels:
+        app: kong-api-gateway
+    spec:
+      serviceAccountName: placide-svc-account
+      initContainers:
+        - name: ms-config-service-readiness-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z kong-microservices-config-service 8280; do echo waiting for kong-microservices-config-service ready; sleep 5; done;'
+        - name: bs-ms-address-readiness-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z k8s-kafka-avro-kong-bs-ms-address 8681; do echo waiting for k8s-kafka-avro-kong-bs-ms-address ready; sleep 5; done;'
+        - name: bs-ms-company-readiness-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z k8s-kafka-avro-kong-bs-ms-company 8682; do echo waiting for k8s-kafka-avro-kong-bs-ms-company ready; sleep 5; done;'
+        - name: bs-ms-employee-readiness-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z k8s-kafka-avro-kong-bs-ms-employee 8683; do echo waiting for k8s-kafka-avro-kong-bs-ms-employee ready; sleep 5; done;'
+        - name: bs-ms-project-readiness-checker
+          image: busybox
+          command:
+            - 'sh'
+            - '-c'
+            - 'until nc -z k8s-kafka-avro-kong-bs-ms-project 8684; do echo waiting for k8s-kafka-avro-kong-bs-ms-project ready; sleep 5; done;'
+      containers:
+        - name: kong-api-gateway
+          image: kong:alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: KONG_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: placide-services-env-variables-cm
+                  key: kong_db
+            - name: KONG_DECLARATIVE_CONFIG
+              valueFrom:
+                configMapKeyRef:
+                  name: placide-services-env-variables-cm
+                  key: kong_declarative_config_file_key
+            - name: KONG_PROXY_ACCESS_LOG
+              valueFrom:
+                configMapKeyRef:
+                  name: placide-services-env-variables-cm
+                  key: kong_proxy_access_log_key
+            - name: KONG_ADMIN_ACCESS_LOG
+              valueFrom:
+                configMapKeyRef:
+                  name: placide-services-env-variables-cm
+                  key: kong_admin_access_log_key
+            - name: KONG_PROXY_ERROR_LOG
+              valueFrom:
+                configMapKeyRef:
+                  name: placide-services-env-variables-cm
+                  key: kong_proxy_error_log_key
+            - name: KONG_ADMIN_ERROR_LOG
+              valueFrom:
+                configMapKeyRef:
+                  name: placide-services-env-variables-cm
+                  key: kong_admin_error_log_key
+            - name: KONG_ADMIN_LISTEN
+              valueFrom:
+                configMapKeyRef:
+                  name: placide-services-env-variables-cm
+                  key: kong_admin_listen_key
+          ports:
+            - name: http-proxy
+              containerPort: 8000
+              hostPort: 8000
+            - name: https-proxy
+              containerPort: 8443
+              hostPort: 8443
+            - name: http-admin
+              containerPort: 8001
+              hostPort: 8001
+            - name: https-admin
+              containerPort: 8444
+          volumeMounts:
+            - mountPath: /opt/kong
+              name: kong-declarative-file
+      volumes:
+        - name: kong-declarative-file
+          configMap:
+            name: placide-declarative-kong-config-file-cm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-proxy-service
+  labels:
+    app: kong-proxy-service
+  namespace: placide-ns
+spec:
+  selector:
+    app: kong-api-gateway
+  ports:
+    - name: http-proxy
+      port: 8000
+      targetPort: 8000
+      nodePort: 30800
+      protocol: TCP
+    - name: https-proxy
+      port: 8443
+      targetPort: 8443
+      protocol: TCP
+      nodePort: 30443
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-admin-service
+  labels:
+    app: kong-admin-service
+  namespace: placide-ns
+spec:
+  selector:
+    app: kong-api-gateway
+  ports:
+    - name: http-admin
+      port: 8001
+      protocol: TCP
+      targetPort: 8001
+      nodePort: 30801
+    - name: https-admin
+      port: 8444
+      targetPort: 8444
+      protocol: TCP
+      nodePort: 30444
+  type: NodePort
+

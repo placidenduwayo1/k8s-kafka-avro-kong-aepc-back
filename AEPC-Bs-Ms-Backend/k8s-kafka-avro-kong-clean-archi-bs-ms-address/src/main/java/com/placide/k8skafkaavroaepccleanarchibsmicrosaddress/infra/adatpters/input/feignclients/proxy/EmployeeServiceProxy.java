@@ -11,7 +11,7 @@ import java.util.List;
 
 @FeignClient(name = "k8s-kafka-avro-kong-bs-ms-employee", url = "http://k8s-kafka-avro-kong-bs-ms-employee:8683",
 path = "/bs-ms-employee-api", fallback = EmployeeServiceProxyFallback.class)
-@Qualifier(value = "employee-service-proxy")
+@Qualifier(value = "employeeserviceproxy")
 public interface EmployeeServiceProxy {
     @GetMapping(value = "/employees/addresses/{addressId}")
     List<EmployeeModel> getRemoteEmployeesLivingAtAddress(@PathVariable(name = "addressId") String addressId);

@@ -23,7 +23,6 @@ public class ProjectModel {
     private String employeeId;
     @Transient
     private Employee employee;
-    @Column(unique = true)
     private String companyId;
     @Transient
     private Company company;

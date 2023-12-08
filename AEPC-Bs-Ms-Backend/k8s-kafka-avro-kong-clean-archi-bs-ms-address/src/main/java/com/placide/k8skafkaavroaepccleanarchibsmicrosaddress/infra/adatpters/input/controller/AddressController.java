@@ -54,8 +54,7 @@ public class AddressController {
 
     @PutMapping(value = "/addresses/id/{addressId}")
     public List<String> editAddress(@RequestBody AddressDto addressDto,
-                                              @PathVariable(name = "addressId") String addressId) throws
-            AddressNotFoundException {
+                                    @PathVariable(name = "addressId") String addressId) throws AddressNotFoundException {
 
         Address produceAndConsumeAddress = inputAddressService.produceAndConsumeAddressEdit(addressDto, addressId);
         Address savedAddress = inputAddressService.editAddress(produceAndConsumeAddress);

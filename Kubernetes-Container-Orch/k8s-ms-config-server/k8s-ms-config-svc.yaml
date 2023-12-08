@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kong-microservices-config-service
+  labels:
+    app: kong-microservices-config-service
+  namespace: placide-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: kong-microservices-config-service
+  template:
+    metadata:
+      name: kong-microservices-config-service
+      labels:
+        app: kong-microservices-config-service
+    spec:
+      serviceAccountName: placide-svc-account
+      containers:
+        - name: kong-microservices-config-service
+          image: placidenduwayo1/kong-microservices-config-service:1.0.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8280
+              name: conf-svc-port
+              hostPort: 8280
+          startupProbe:
+            httpGet:
+              port: conf-svc-port
+              path: /ms-config-svc-api
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              port: conf-svc-port
+              path: /ms-config-svc-api
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              port: conf-svc-port
+              path: /ms-config-svc-api
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kong-microservices-config-service
+  labels:
+    app: kong-microservices-config-service
+  namespace: placide-ns
+spec:
+  selector:
+    app: kong-microservices-config-service
+  ports:
+    - port: 8280
+      protocol: TCP
+      targetPort: 8280
+      nodePort: 30280
+      name: conf-svc-port
+  type: LoadBalancer
+

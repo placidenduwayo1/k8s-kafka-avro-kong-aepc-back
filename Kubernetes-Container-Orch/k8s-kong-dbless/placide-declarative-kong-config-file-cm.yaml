@@ -1,0 +1,136 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: placide-declarative-kong-config-file-cm
+  labels:
+    app: placide-kong-config-file-cm
+  namespace: placide-ns
+data:
+  kong.yaml: |
+    _format_version: "3.0"
+    
+    services:
+      #  services and their routes
+      - name: kong-microservices-config-service
+        url: http://kong-microservices-config-service:8280
+        routes:
+          - name: route-0
+            paths:
+              - /ms-config-svc-api
+            strip_path: false
+      - name: k8s-kafka-avro-kong-bs-ms-address
+        url: http://k8s-kafka-avro-kong-bs-ms-address:8681
+        routes:
+          - name: route-1
+            paths:
+              - /bs-ms-address-api
+            strip_path: false
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      - name: k8s-kafka-avro-kong-bs-ms-company
+        url: http://k8s-kafka-avro-kong-bs-ms-company:8682
+        routes:
+          - name: route-2
+            paths:
+              - /bs-ms-company-api
+            strip_path: false
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      - name: k8s-kafka-avro-kong-bs-ms-employee
+        url: http://k8s-kafka-avro-kong-bs-ms-employee:8683
+        routes:
+          - name: route-3
+            paths:
+              - /bs-ms-employee-api
+            strip_path: false
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      - name: k8s-kafka-avro-kong-bs-ms-project
+        url: http://k8s-kafka-avro-kong-bs-ms-project:8684
+        routes:
+          - name: route-4
+            paths:
+              - /bs-ms-project-api
+            strip_path: false
+            methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+      #global plugins: rate-limiting,proxy-cache,authentication
+    plugins:
+      - name: file-log
+        config:
+          path: "/opt/logs-file.log"
+      - name: rate-limiting
+        config:
+          minute: 5
+          policy: local
+      - name: proxy-cache
+        config:
+          response_code:
+            - 200
+          request_method:
+            - GET
+          content_type:
+            - text/plain
+            - application/json
+          cache_ttl: 300
+          strategy: memory
+      - name: cors
+        config:
+          origins:
+            - "*"
+          methods:
+            - GET
+            - POST
+            - DELETE
+            - PUT
+          headers:
+            - Accept
+            - Accept-Version
+            - Content-Length
+            - Content-MD5
+            - Content-Type
+            - Date
+            - X-Auth-Token
+          exposed_headers:
+            - X-Auth-Token
+          credentials: true
+          max_age: 3600
+      - name: ip-restriction
+        config:
+          deny:
+            - 54.13.21.1
+            - 143.1.0.0/24
+      - name: basic-auth
+        config:
+          hide_credentials: true
+    consumers:
+      - username: admin1
+        custom_id: admin1
+      - username: admin2
+        custom_id: admin2
+      - username: admin3
+        custom_id: admin3
+        
+    # credentials for basic authentication plugin
+    basicauth_credentials:
+      - consumer: admin1
+        username: placide
+        password: placide
+      - consumer: admin2
+        username: nduwayo
+        password: nduwayo
+      - consumer: admin3
+        username: pnd
+        password: pnd

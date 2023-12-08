@@ -21,16 +21,17 @@
 ## 1. utility microservices
 - microservices-config-service: to centralize and distribute all microservices configurations
 - kong-API-gateway as unique entry point to backend microservices. 
-- In declarative mode, **kong.yaml** file of all configurations and docker-compose file for kong deployment are defined under **Kong-API-Gateway-DBLess** folder:
+- kong-API-gateway in declarative mode, the docker-compose file for images deployment is located under **Kong-Gateway-DBLess-Docker** 
+- In declarative mode, **kong.yaml** file of all Kong objects is defined under **Kong-Gateway-Config-DBLess** folder:
     - routing: all microservices routes,
     - rate-limiting: common plugin for all microservices that limit traffics to 5 requests each minute,
     - authentication: http user have to authenticate before accessing the appication,
     - logging
 - when using UI for managing kong objects, we deploy **konga-dashboard**: 
   - all configuratons created declarative mode, are done using konga UI
-  - under **Kong-API-Gateway-Postgres-Konga** folder is docker-compose file for deploying kong infrastructure:
-    - **postgress db**, **kong-database-migrations**, **kong-api-gateway**, **konga-dashboard**
-- Under **Logs** folder is a logs file of all hppt request torwards backend microservices
+  - under **Kong-Gateway-Postgres-Konga-Docker** folder is docker-compose file for deploying kong infrastructure:
+    - **postgress db**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
+- Under **Logs** folder is a logs file **logs-file.log** that logs all hppt request torwards backend microservices
 
 ## 2. kafka infrastructure
 - a kafka infrastructure to publish and distribute events.
@@ -65,7 +66,7 @@
  
     
  ### deployed microservices in docker images
- - kafka infrastructure:
+- kafka infrastructure:
   - zookeeper (one instance) for managing kafka brokers
   - kafka server (three instances)
   - kafdrop (one instance) for web UI for monitoring kafka brokers, topics and events produced
@@ -79,6 +80,10 @@
   - k8s-kafka-avro-kong-bs-ms-employee
   - k8s-kafka-avro-kong-bs-ms-company
   - k8s-kafka-avro-kong-bs-ms-project
+
+all those docker containers are deployed into a **kubernetes minikube cluster**.
+- in the folder **Kubernetes-Container-Orch** contains all k8s deployments.
+- in the first time, i deployed **kong-api-geteway** in declarative mode: file **kong-api-gateway-declarative-mode.yaml**
  
 ### summary (CI-DC)
 ![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/dcf3f67e-4330-4563-91d5-947703e92ade)
@@ -178,7 +183,7 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-company pod:
       address-id: string value
     }
     ```  
-  **Note**: cannot update company on address that already holds another company  
+  **Note**: cannot update company on address holding another company  
 ## employee-microservice 
 list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-employee pod:  
   - [GET] ```http://localhost:8002/employee-api/```  
@@ -197,7 +202,7 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-employee pod:
   - [GET] ```http://localhost:8002/employee-api/employees/id/{employee-id}```  
   - [GET] ```http://localhost:8002/employee-api/employees/lastname/{lastname}```  
   - [DELETE] ```http://localhost:8002/employee-api/employees/id/{employee-id}```  
-  **Note**: cannot delete employee that already assigned project(s)  
+  **Note**: cannot delete employee already assigned project(s)  
   - [PUT] ```http://localhost:8002/employee-api/employees/id/{employee-id}```   
   ***payload:***  
   ```

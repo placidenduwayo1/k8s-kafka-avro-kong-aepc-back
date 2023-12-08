@@ -14,7 +14,7 @@ services:
     routes:
       - name: route-1
         paths:
-          - /address-api
+          - /bs-ms-address-api
         strip_path: false
         methods:
           - GET
@@ -26,7 +26,7 @@ services:
     routes:
       - name: route-2
         paths:
-          - /company-api
+          - /bs-ms-company-api
         strip_path: false
         methods:
           - GET
@@ -39,7 +39,7 @@ services:
     routes:
       - name: route-3
         paths:
-          - /employee-api
+          - /bs-ms-employee-api
         strip_path: false
         methods:
           - GET
@@ -52,7 +52,7 @@ services:
     routes:
       - name: route-4
         paths:
-          - /project-api
+          - /bs-ms-project-api
         strip_path: false
         methods:
           - GET
