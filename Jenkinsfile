@@ -83,8 +83,8 @@ pipeline {
             steps {
                 echo 'Starting to build docker images of the application'
                 script {
-                    sh 'docker compose -f ./Kong-API-Gateway-Postgres-Konga/appli-stack-kong-konga-postgres-compose.yml down'
-                    sh 'docker compose -f ./Kong-API-Gateway-Postgres-Konga/appli-stack-kong-konga-postgres-compose.yml build'
+                    sh 'docker compose -f ./Kong-Gateway-DBLess-Docker/appli-stack-kong-dbless-compose.yml down'
+                    sh 'docker compose -f ./Kong-Gateway-DBLess-Docker/appli-stack-kong-dbless-compose.yml build'
                     sh 'docker system prune -f'
                 }
             }
@@ -94,7 +94,7 @@ pipeline {
                 echo 'Starting to publish docker images into docker registry'
                 script {
                     withDockerRegistry([ credentialsId: 'dockerhub-credentials', url: '' ]) {
-                        sh 'docker compose -f ./Kong-API-Gateway-Postgres-Konga/appli-stack-kong-konga-postgres-compose.yml push'
+                        sh 'docker compose -f ./Kong-Gateway-DBLess-Docker/appli-stack-kong-dbless-compose.yml push'
                     }
                 }
             }
