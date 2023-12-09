@@ -7,6 +7,7 @@ import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.exceptions.A
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputAddressService;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputRemoteCompanyService;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.domain.ports.output.OutputRemoteEmployeeService;
+import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.models.CompanyModel;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.models.EmployeeModel;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.proxy.CompanyServiceProxy;
 import com.placide.k8skafkaavroaepccleanarchibsmicrosaddress.infra.adatpters.input.feignclients.proxy.EmployeeServiceProxy;
@@ -25,6 +26,7 @@ import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -144,14 +146,24 @@ public class OutputAddressServiceImpl implements OutputAddressService, OutputRem
     @Override
     public Company getRemoteCompanyOnGivenAddress(String addressId) throws AddressNotFoundException {
         Address address = getAddress(addressId).orElseThrow(AddressNotFoundException::new);
-       return CompanyMapper.toBean(companyServiceProxy.getRemoteCompanyAtAddress(address.getAddressId()));
+        CompanyModel model = companyServiceProxy.getRemoteCompanyAtAddress(address.getAddressId());
+        Company company = null;
+        if(model!=null){
+            company = CompanyMapper.toBean(model);
+        }
+       return company;
     }
 
     @Override
     public List<Employee> getRemoteEmployeesLivingAtAddress(String addressId) throws AddressNotFoundException {
         Address address = getAddress(addressId).orElseThrow(AddressNotFoundException::new);
+        List<Employee> beans = Collections.emptyList();
         List<EmployeeModel> models = employeeServiceProxy.getRemoteEmployeesLivingAtAddress(address.getAddressId());
-        return models.stream()
-                .map(EmployeeMapper::toBean).toList();
+        if(!models.isEmpty()){
+            beans=models.stream()
+                    .map(EmployeeMapper::toBean)
+                    .toList();
+        }
+        return beans;
     }
 }

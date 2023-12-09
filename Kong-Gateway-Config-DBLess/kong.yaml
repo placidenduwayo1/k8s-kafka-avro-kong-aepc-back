@@ -106,20 +106,25 @@ plugins:
       deny:
         - 54.13.21.1
         - 143.1.0.0/24
-  - name: jwt
-    enabled: true
+  - name: basic-auth
     config:
-        key_claim_name: key_id
-        claims_to_verify:
-          - exp #activate expiration datetime
+      hide_credentials: true
 consumers:
   - username: admin1
-    custom_id: admin2023-11-03:12:51
+    custom_id: admin1
   - username: admin2
-    custom_id: admin2-2023-11-03:12:51
-# credentials for jwt authentication plugin
-jwt_secrets:
+    custom_id: admin2
+  - username: admin3
+    custom_id: admin3
+
+# credentials for basic authentication plugin
+basicauth_credentials:
   - consumer: admin1
-    secret: "use_to_sign_token"
+    username: placide
+    password: placide
   - consumer: admin2
-    secret: "use_to_sign_token"
+    username: nduwayo
+    password: nduwayo
+  - consumer: admin3
+    username: pnd
+    password: pnd
