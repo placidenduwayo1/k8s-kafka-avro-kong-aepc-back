@@ -24,7 +24,7 @@ the whole application is divided into two part:
 
 ## 2. kafka infrastructure
 - **zookeeper**: to manage kafka servers (brokers)
-- **3 kafka-servers**: **kafka-broker-1**, **kafka-broker-2**, **kafka-broker-3**: publish events into topics and disbribute them to consumers
+- **3 kafka-servers**: publish events into topics and disbribute them to consumers
 - **schema-registry**: defines and register a common schema for all kafka events
 - **avro-schema**: serializes kafka events
 - **kafdrop-ui**: a ui to manage kafka topics and events
@@ -74,15 +74,15 @@ the whole application is divided into two part:
 
  # Docker images deploy
  All the services of the application are deployed into docker images: 
-- kafka infrastructure: zookeeper, kafka-server, schema-regisrry, kafdrop-ui
-- microservices config server: kong-microservices-config-service
-- kong api infrastructure: postgreSQL, kong-db-prepare, kong-api-gateway, konga-db-prepare, konga-konga-dashboard
+- kafka infrastructure: **zookeeper**, **3 kafka-servers** (kafka-broker-1, kafka-broker-2, kafka-broker-3), **schema-registy-service**, **kafdrop-ui**
+- microservices config server: **kong-microservices-config-service**
+- kong api infrastructure: **postgreSQL**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-konga-dashboard**
 - business microservices:
   - k8s discovery service dependency for microservices registration and discovery
-  - k8s-kafka-avro-kong-bs-ms-address
-  - k8s-kafka-avro-kong-bs-ms-employee
-  - k8s-kafka-avro-kong-bs-ms-company
-  - k8s-kafka-avro-kong-bs-ms-project
+  - **k8s-kafka-avro-kong-bs-ms-address**
+  - **k8s-kafka-avro-kong-bs-ms-employee**
+  - **k8s-kafka-avro-kong-bs-ms-company**
+  - **k8s-kafka-avro-kong-bs-ms-project**
 
 # K8s docker container deploy
 
