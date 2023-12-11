@@ -124,7 +124,7 @@ kong-api-gateway url: **http://192.168.49.2:30800/**
 
   ## address-microservice
 
-list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-address:  
+list of exposed endpoints by **k8s-kafka-avro-kong-bs-ms-address**:  
   - [GET]```http://192.168.49.2:30800/address-api/```  
   - [POST]```http://192.168.49.2:30800/addresses```    
     ***payload***:  
