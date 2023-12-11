@@ -102,7 +102,7 @@ the whole application is divided into two part:
 all the docker containers of the application are deployed into a **K8s minikube cluster**.
 - the folder **Kubernetes-Container-Orch** contains k8s deployments of all containers of the application.
 - in the first time, **kong-api-geteway** is deployed in declarative mode:**kong-api-gateway-declarative-mode.yaml**
-- all k8s deployment (pods) are exposed using **k8s-services**
+- each k8s deployment (pods) is exposed using **k8s Service**
 
 # global architecture of the project
 ![k8s-kafka-avro-kong-clean-archi](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/4107499e-7894-4240-998c-b2c8e144751d)
