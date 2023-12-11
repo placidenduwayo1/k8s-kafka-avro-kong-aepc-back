@@ -1,7 +1,7 @@
 # Application base microservices (suite2)
 (NEW) in this project, we replace gateway Api **Spring-Cloud-Gateway** by **Kong Api Gateway**  
 (NEW) we configure in the Kong Gateway: **routing**, **rate-limiting**, **authentication**, **logging**, **etc.**  
-(NEW) we add Konga-dashboard which is Kong UI to manage Kong objects
+(NEW) we add Konga-dashboard which is kong ui to manage Kong objects
 
 - application base microservices that manage addresses, employees, companies and projects. 
 - each business microservices of the application is implemented into **clean architecture**. 
@@ -19,32 +19,31 @@
 # utility services
 
 ## 1. configuration server
-**microservices-config-service**: to centralize and distribute all microservices configurations
+**microservices-config-service**: to centralize and distribute all microservices configurations into a git repository
 
 ## 2. kafka infrastructure
 - a kafka infrastructure to publish and distribute events.
 - each writing event in database (POST, DELETE, UPDATE) is distributed into kafka topics.
 - **schema registry** to difine schema for all events and **avro** to serialiaze events sent to topics
-- **kafdrop** is used as UI for managing and exploring kafka events, kafka servers,...
+- **kafdrop** is used as ui for managing and exploring kafka events, kafka servers,...
 - kafka infrastructure:
   - **zookeeper**: to manage kafka brokers
-  - **kafka-server(3 brokers)**, **kafka-broker-1**, **kafka-broker-2**, **kafka-broker-3**: publish events into topics and disbribute events to consumers
+  - **kafka-servers (3 brokers)**, **kafka-broker-1**, **kafka-broker-2**, **kafka-broker-3**: publish events into topics and disbribute events to consumers
   - **schema registry**: defines and register a common schema of the all events
-  - **avro schema**:to serialize kafka events
-  - **kafdrop**: a kafka UI
+  - **avro schema**: serializes kafka events
+  - **kafdrop**: a kafka ui to manage kafka topics and events
 
 ## 3. kong-API-Gateway
-- **kong-API-Gateway** as unique entry point to backend microservices. 
-- kong-API-gateway in declarative mode, the docker-compose file for images deployment is located under **Kong-Gateway-DBLess-Docker**. **kong.yaml** file of all Kong objects is defined under **Kong-Gateway-Config-DBLess** folder: **routing**, **rate-limiting**, **authentication** (basic-auth, jwt), **logging**. 
-- when using UI for managing kong objects, we deploy **konga-dashboard**: 
-  - all configuratons created declarative mode, are done using konga-ui
-  - under **Kong-Gateway-Postgres-Konga-Docker** folder is docker-compose file for deploying kong infrastructure:
-    - **postgress db**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
+- **kong-API-Gateway** is a unique entry point (proxy) to backend microservices. 
+- in declarative mode, kong-API-gateway is deployed using docker and docker-compose file. the compose file is defined under **Kong-Gateway-DBLess-Docker** folder and **kong.yaml** file of all Kong objects is defined under **Kong-Gateway-Config-DBLess** folder: **routing**, **rate-limiting**, **authentication** (basic-auth, jwt), **logging** plugins. 
+- using ui for managing kong objects, we deploy **konga-dashboard**: 
+  - all configuratons created in declarative mode, are done using konga-dashboard
+  - under **Kong-Gateway-Postgres-Konga-Docker** folder is docker-compose file for deploying kong infrastructure: **postgress db**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
 - Under **Logs** folder is a logs file **logs-file.log** that logs all hppt request torwards backend microservices
 
 ## 4. databases
 - **mysql db** docker image for peristing data from business microservices
-- **postgreSQL db** docker image for persisting all kong configurations made with Konga-UI
+- **postgreSQL db** docker image for persisting all kong configurations made with konga-dashboard
 
 # unit tests and deploment
 - each code unit of business microservices is tested with **JUnit5** and **AssertJ**.
@@ -62,34 +61,30 @@
   - run docker images of microservices of application in docker containers.
  
     
- ### Docker images
- All the services: **business microservices**, **microservices-config-server**, **kafka infrastructure**, 
-- kafka infrastructure:
-  - zookeeper (one instance) for managing kafka brokers
-  - kafka server (three instances)
-  - kafdrop (one instance) for web UI for monitoring kafka brokers, topics and events produced
-- utility microservices:
-  - a config service for managing and externalize services configuration
-  - a K8s discovery service dependency for microservices registration and discovery
-  - kong api infrastructure: postgreSQL, kong-db-prepare, kong-api-gateway, konga-db-prepare, konga-konga-dashboard
-
+ # Docker images deploy
+ All the services of the application are deployed into docker images: 
+- kafka infrastructure: zookeeper, kafka-server, schema-regisrry, kafdrop-ui
+- microservices config server: kong-microservices-config-service
+- kong api infrastructure: postgreSQL, kong-db-prepare, kong-api-gateway, konga-db-prepare, konga-konga-dashboard
 - business microservices:
+  - k8s discovery service dependency for microservices registration and discovery
   - k8s-kafka-avro-kong-bs-ms-address
   - k8s-kafka-avro-kong-bs-ms-employee
   - k8s-kafka-avro-kong-bs-ms-company
   - k8s-kafka-avro-kong-bs-ms-project
 
-### Docker container deploy
+# K8s docker container deploy
 
-all those docker containers are deployed into a **kubernetes minikube cluster**.
-- in the folder **Kubernetes-Container-Orch** contains k8s deployments of all containers of the application.
+all the docker containers of the application are deployed into a **K8s minikube cluster**.
+- the folder **Kubernetes-Container-Orch** contains k8s deployments of all containers of the application.
 - in the first time, **kong-api-geteway** is deployed in declarative mode:**kong-api-gateway-declarative-mode.yaml**
+- all k8s deployment (pods) are exposed by **k8s-services**
  
-### summary (CI-DC)
+# summary (CI-DC)
 ![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/dcf3f67e-4330-4563-91d5-947703e92ade)
 
     
-## architecture kafka inside business microservice
+# architecture kafka inside business microservice
 - a model is a java bean that is sent as payload using a REST api, 
 - a spring service build a kafka message with java model,
 - a spring service uses kafka producer to send the kafka message to kafka topic,
@@ -97,7 +92,7 @@ all those docker containers are deployed into a **kubernetes minikube cluster**.
 - the final spring service can handle received event as it wants, either to persist it in db or do anything with it.
 
 
-  ### kafka infra summary
+# kafka infra summary
 ![kafka-infrastructure](https://github.com/placidenduwayo1/k8s-kafka-avro-aepc-back/assets/124048212/4cb3738e-718a-466c-9b59-41d4773a1a0b)
 
 - a schema registry defines a schema for all events to publish into kafka topics,
@@ -110,15 +105,15 @@ all those docker containers are deployed into a **kubernetes minikube cluster**.
 
 - To access to backend business microservices, the client goes through a ***kong-api-gateway***
 
-## Kong object creation using Konga-dashbboard
+# Kong object creation using Konga-dashbboard
 
-- to manager Kong objects using Konga-dashoboard, we connect to Konga-dashboard: **http://localhost:8686**.
+- to manager kong objects using konga-dashoboard, we connect to konga-dashboard: **http://localhost:8686**.
 - we create connection to Kong Admin API: **http://kong-api-gateway:8001**.
 - via the kong-dashboard we can configure: create services, routes, plugins, consumers, etc.
 
 ## expoded endpoints by microservices
 
-After creating Kong objects ing Kong-dashboard, we access to endepoints via kong api gateway
+After creating kong objects ing Kong-dashboard, we access to endepoints via kong api gateway
 
 kong-api-gateway url: **http://192.168.49.2:30800/**
 
