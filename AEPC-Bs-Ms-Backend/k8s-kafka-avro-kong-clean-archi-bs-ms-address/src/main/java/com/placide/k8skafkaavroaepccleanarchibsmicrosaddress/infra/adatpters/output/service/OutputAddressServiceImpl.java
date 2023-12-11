@@ -157,13 +157,9 @@ public class OutputAddressServiceImpl implements OutputAddressService, OutputRem
     @Override
     public List<Employee> getRemoteEmployeesLivingAtAddress(String addressId) throws AddressNotFoundException {
         Address address = getAddress(addressId).orElseThrow(AddressNotFoundException::new);
-        List<Employee> beans = Collections.emptyList();
-        List<EmployeeModel> models = employeeServiceProxy.getRemoteEmployeesLivingAtAddress(address.getAddressId());
-        if(!models.isEmpty()){
-            beans=models.stream()
-                    .map(EmployeeMapper::toBean)
-                    .toList();
-        }
-        return beans;
+        return employeeServiceProxy.getRemoteEmployeesLivingAtAddress(address.getAddressId())
+                .stream()
+                .map(EmployeeMapper::toBean)
+                .toList();
     }
 }

@@ -18,15 +18,10 @@
 
 # utility tools
 
-## 1. utility microservices
-- microservices-config-service: to centralize and distribute all microservices configurations
-- kong-API-gateway as unique entry point to backend microservices. 
-- kong-API-gateway in declarative mode, the docker-compose file for images deployment is located under **Kong-Gateway-DBLess-Docker** 
-- In declarative mode, **kong.yaml** file of all Kong objects is defined under **Kong-Gateway-Config-DBLess** folder:
-    - routing: all microservices routes,
-    - rate-limiting: common plugin for all microservices that limit traffics to 5 requests each minute,
-    - authentication: http user have to authenticate before accessing the appication,
-    - logging
+## 1. utility services
+- **microservices-config-service**: to centralize and distribute all microservices configurations
+- **kong-API-gateway** as unique entry point to backend microservices. 
+- kong-API-gateway in declarative mode, the docker-compose file for images deployment is located under **Kong-Gateway-DBLess-Docker**. **kong.yaml** file of all Kong objects is defined under **Kong-Gateway-Config-DBLess** folder: routing, rate-limiting, authentication (basic-auth, jwt), logging. 
 - when using UI for managing kong objects, we deploy **konga-dashboard**: 
   - all configuratons created declarative mode, are done using konga UI
   - under **Kong-Gateway-Postgres-Konga-Docker** folder is docker-compose file for deploying kong infrastructure:
@@ -65,7 +60,8 @@
   - run docker images of microservices of application in docker containers.
  
     
- ### deployed microservices in docker images
+ ### Docker images
+ All the services: **business microservices**, **microservices-config-server**, **kafka infrastructure**, 
 - kafka infrastructure:
   - zookeeper (one instance) for managing kafka brokers
   - kafka server (three instances)
@@ -80,6 +76,8 @@
   - k8s-kafka-avro-kong-bs-ms-employee
   - k8s-kafka-avro-kong-bs-ms-company
   - k8s-kafka-avro-kong-bs-ms-project
+
+### Docker container deploy
 
 all those docker containers are deployed into a **kubernetes minikube cluster**.
 - in the folder **Kubernetes-Container-Orch** contains k8s deployments of all containers of the application.
