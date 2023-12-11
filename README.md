@@ -1,14 +1,18 @@
 # Application base microservices (suite2)
 (NEW) in this project, we replace gateway Api **Spring-Cloud-Gateway** by **Kong Api Gateway**  
-(NEW) we configure in the Kong Gateway: **routing**, **rate-limiting**, **authentication**, **logging**, **etc.**  
-(NEW) we add Konga-dashboard which is kong ui to manage Kong objects
+(NEW) we configure in the kong-api-gateway: **routing**, **rate-limiting**, **authentication**, **logging**, **etc.**  
+(NEW) we add konga-dashboard manage kong objects
 
-- application base microservices that manage addresses, employees, companies and projects. 
-- each business microservices of the application is implemented into **clean architecture**. 
-- each writing event is published and distributed using **kafka infrastructure**.
-- **avro** and **schema-registry** are used to serialize kafka events
-- kong-api-gateway to be the bridge between http users and backend services
-- konga-dashboard to manager Kong objects
+application base microservices that manage addresses, employees, companies and projects.  
+each business microservices of the application is implemented into **clean architecture**.  
+each writing event is published and distributed using **kafka infrastructure**.  
+**avro** and **schema-registry** are used to serialize kafka events.  
+kong-api-gateway to be the bridge between http users and backend services.  
+konga-dashboard to manager Kong objects  .
+
+Application is divided into two part: 
+- business microservices: define the business code, the functionnality of the application
+- utility services: serving business microservices for a good interoperability
 
 ## business microservices
 - Address-microservice 
@@ -49,7 +53,7 @@
 - each code unit of business microservices is tested with **JUnit5**
 - **Mockito** is used to mock external unit dependency.
 - i use **KafkaContainer** to mock Kafka objects containers (producer/consumer). see doc [Testcontainers for Java](https://java.testcontainers.org/modules/kafka/).
-- each service (business and utility microservice) is deployed in docker image.
+- each service of the application (business and utility services) is deployed in docker image.
 - a docker-compose template is used to deploy all images of the application.
 - Jenkins is used for continuous integrataion and deployment (CI/CD). After each git commit, Jenkins launch automatically following jobs:
   - a build of each microservice.
