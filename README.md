@@ -19,7 +19,7 @@
 # utility services
 
 ## 1. configuration server
-- **microservices-config-service**: to centralize and distribute all microservices configurations
+**microservices-config-service**: to centralize and distribute all microservices configurations
 
 ## kong-API-Gateway
 - **kong-API-Gateway** as unique entry point to backend microservices. 
