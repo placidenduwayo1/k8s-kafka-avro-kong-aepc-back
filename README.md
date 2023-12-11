@@ -74,9 +74,9 @@ the whole application is divided into two part:
 
  # Docker images deploy
  All the services of the application are deployed into docker images: 
-- kafka infrastructure: **zookeeper**, **3 kafka-servers** (kafka-broker-1, kafka-broker-2, kafka-broker-3), **schema-registy-service**, **kafdrop-ui**
+- kafka infra: **zookeeper**, **3 kafka-servers** (kafka-broker-1, kafka-broker-2, kafka-broker-3), **schema-registy-service**, **kafdrop-ui**
 - microservices config server: **kong-microservices-config-service**
-- kong api infrastructure: **postgreSQL**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
+- kong api infra: **postgreSQL**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
 - business microservices:
   - k8s discovery service dependency for microservices registration and discovery
   - **k8s-kafka-avro-kong-bs-ms-address**
