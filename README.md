@@ -83,10 +83,10 @@ the whole application is divided into two part:
         }
     ```
      
-## CI-DC
+## ci-cd
 ![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/dcf3f67e-4330-4563-91d5-947703e92ade)
 
- # Docker images deploy
+ # docker images deploy
  All the services of the application are deployed into docker images: 
 - **kafka infra**: zookeeper, 3 kafka-servers (kafka-broker-1, kafka-broker-2, kafka-broker-3), schema-registy-service, kafdrop-ui
 - **microservices config server**: kong-microservices-config-service
@@ -98,7 +98,7 @@ the whole application is divided into two part:
   - k8s-kafka-avro-kong-bs-ms-company
   - k8s-kafka-avro-kong-bs-ms-project
 
-# K8s docker container deploy
+# k8s docker container deploy
 all the docker containers of the application are deployed into a **K8s minikube cluster**.
 - the folder **Kubernetes-Container-Orch** contains k8s deployments of all containers of the application.
 - in the first time, **kong-api-geteway** is deployed in declarative mode:**kong-api-gateway-declarative-mode.yaml**
@@ -110,15 +110,15 @@ all the docker containers of the application are deployed into a **K8s minikube 
 
 - To access to backend business microservices, the client goes through a ***kong-api-gateway***
 
-# Kong object creation using Konga-dashbboard
+# kong object creation using konga-ui
 
 - to manager kong objects using konga-dashoboard, we connect to konga-dashboard: **http://localhost:8686**.
-- we create connection to Kong Admin API: **http://kong-api-gateway:8001**.
-- via the kong-dashboard we can configure: create services, routes, plugins, consumers, etc.
+- we create connection to kong admin api: **http://kong-api-gateway:8001**.
+- via kong-dashboard we configure: services, routes, plugins, consumers, credentials.
 
 ## expoded endpoints by microservices
 
-After creating kong objects ing Kong-dashboard, we access to endepoints via kong api gateway
+- after deploying into k8s cluster the kong-api-gateway in declarative mode, we access to endpoints via kong api gateway as follows:
 
 kong-api-gateway url: **http://192.168.49.2:30800/**
 
