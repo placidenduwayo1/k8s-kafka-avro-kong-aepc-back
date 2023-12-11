@@ -23,19 +23,17 @@ the whole application is divided into two part:
 **microservices-config-service**: to centralize and distribute all microservices configurations into a git repository
 
 ## 2. kafka infrastructure
-a kafka infrastructure to publish and distribute events.each writing event in db (POST, DELETE, UPDATE) is distributed into kafka topics. **schema-registry** difines common schema for all events and **avro-schema** serialiazes those events. **kafdrop** is used as ui for managing and exploring kafka servers, topics, events.
-- kafka infra:
-  - **zookeeper**: to manage kafka servers (brokers)
-  - **3 kafka-servers**: **kafka-broker-1**, **kafka-broker-2**, **kafka-broker-3**: publish events into topics and disbribute them to consumers
-  - **schema-registry**: defines and register a common schema of the all events
-  - **avro-schema**: serializes kafka events
-  - **kafdrop-ui**: a kafka ui to manage kafka topics and events
+- **zookeeper**: to manage kafka servers (brokers)
+- **3 kafka-servers**: **kafka-broker-1**, **kafka-broker-2**, **kafka-broker-3**: publish events into topics and disbribute them to consumers
+- **schema-registry**: defines and register a common schema for all kafka events
+- **avro-schema**: serializes kafka events
+- **kafdrop-ui**: a ui to manage kafka topics and events
 
-## 3. kong-API-Gateway
-- **kong-API-Gateway** is a unique entry point (proxy) to backend microservices. 
-- in declarative mode, kong-API-gateway is deployed using docker and docker-compose file. the compose file is defined under **Kong-Gateway-DBLess-Docker** folder and **kong.yaml** file of all Kong objects is defined under **Kong-Gateway-Config-DBLess** folder: **routing**, **rate-limiting**, **authentication** (basic-auth, jwt), **logging** plugins. 
-- using ui for managing kong objects, we deploy **konga-dashboard**: 
-  - all configuratons created in declarative mode, are done using konga-dashboard
+## 3. kong-api-Gateway
+- **kong-api-Gateway**: a unique entry point (proxy) to backend microservices. 
+- in declarative mode, kong-api-gateway is deployed using docker and docker-compose file (under **Kong-Gateway-DBLess-Docker** folder) and a configuration fle **kong.yaml** (under **Kong-Gateway-Config-DBLess** folder) of all kong objects : **routing**, **rate-limiting**, **authentication** (basic-auth, jwt), **logging**, **consumers**, **credentials**. 
+- when we use ui for managing kong objects, we deploy **konga-dashboard**: 
+  - all configuratons created in declarative mode, are made using konga-dashboard
   - under **Kong-Gateway-Postgres-Konga-Docker** folder is docker-compose file for deploying kong infrastructure: **postgress db**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
 - Under **Logs** folder is a logs file **logs-file.log** that logs all hppt request torwards backend microservices
 
@@ -49,14 +47,28 @@ a kafka infrastructure to publish and distribute events.each writing event in db
 - i use **KafkaContainer** to mock Kafka objects containers (producer/consumer). see doc [Testcontainers for Java](https://java.testcontainers.org/modules/kafka/).
 - each service of the application (business and utility services) is deployed in docker image.
 - a docker-compose template is used to deploy all images of the application.
-- Jenkins is used for continuous integrataion and deployment (CI/CD). After each git commit, Jenkins launch automatically following jobs:
-  - a build of each microservice.
-  - unit tests of all business microservices and published a report of passed, skipped and fail tests.
-  - package each microservice and publish a related jar file.
-  - build a docker image of each microservice refering to a dockerfile defined inside microservice.
-  - publish docker images in docker registry.
-  - run docker images of microservices of application in docker containers.
- 
+- i use **Jenkins** for continuous integrataion and deployment (CI/CD). After each git commit, Jenkins launch automatically following jobs:
+  - build, package each microservice and publish a related jar file : **mvn clean install**, **archiveArtifacts '/target/*.jar'**.
+  - test all code units of all business microservices and published a report of tests: **mvn test**, **junit '/target/surefire-reports/TEST-*.xml**
+  - build a docker image of each microservice refering to a dockerfile defined inside microservice: **sh 'docker compose -f compose-file.yaml build'**
+  - publish docker images in docker registry: 
+    - create credentials into Jenkins: dashboard>Manage Jenkins>credentials: under global add new credential
+    - take docker username and token from your dockerhub and add them respectively in username and password fields of the displayed form
+    - add in the ID field, add the id of your credentials
+    - in Jenkins pipeline, add the docker publish stage 
+    ```
+    stage ('Publish appli stack docker images') {
+            steps {
+                echo 'Starting to publish docker images into docker registry'
+                script {
+                    withDockerRegistry([ credentialsId: 'dockerhub-credentials', url: '' ]) {
+                        sh 'docker compose -f -f compose-file.yaml push'
+                    }
+                }
+            }
+        }
+    ```
+    
     
  # Docker images deploy
  All the services of the application are deployed into docker images: 
