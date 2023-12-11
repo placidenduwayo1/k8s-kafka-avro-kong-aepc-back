@@ -29,13 +29,13 @@ the whole application is divided into two part:
 - **avro-schema**: serializes kafka events
 - **kafdrop-ui**: a ui to manage kafka topics and events
 
-## kafka architecture inside business microservices
+### 1. kafka architecture inside business microservices
 - a model is a java bean that is sent as payload using a REST api, 
 - a spring service build a kafka message with java model,
 - a spring service uses kafka producer to send the kafka message to kafka topic,
 - a spring service uses kafka consumer to subscribe to the kafka topic and consumes events that it sends to another spring service,
 - the final spring service can handle received event as it wants, either to persist it in db or do anything with it.
-## kafka infra summary
+### 2. kafka infra summary
 ![kafka-infrastructure](https://github.com/placidenduwayo1/k8s-kafka-avro-aepc-back/assets/124048212/4cb3738e-718a-466c-9b59-41d4773a1a0b)
 
 - a schema registry defines a schema for all events to publish into kafka topics,
