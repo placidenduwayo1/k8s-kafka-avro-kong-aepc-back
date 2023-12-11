@@ -4,7 +4,7 @@
 - kong-api-gateway between front and back services. konga-dashboard to manager kong objects.
 
 (NEW) in this project, we replace api gateway **Spring-Cloud-Gateway** by **kong-api-gateway**  
-(NEW) we configure plugis in the kong-api-gateway : **routing**, **rate-limiting**, **authentication**, **logging**, **CORS**,**proxy-cache**,**ip-restrictions**  
+(NEW) we configure plugis in the kong-api-gateway : **routing**, **rate-limiting**, **authentication**, **logging**, **cors**,**proxy-cache**,**ip-restrictions**  
 (NEW) we add konga-dashboard to manage kong objects
 
 the whole application is divided into two part: 
@@ -69,14 +69,14 @@ the whole application is divided into two part:
         }
     ```
      
-## summary (CI-DC)
+## CI-DC
 ![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/dcf3f67e-4330-4563-91d5-947703e92ade)
 
  # Docker images deploy
  All the services of the application are deployed into docker images: 
 - kafka infrastructure: **zookeeper**, **3 kafka-servers** (kafka-broker-1, kafka-broker-2, kafka-broker-3), **schema-registy-service**, **kafdrop-ui**
 - microservices config server: **kong-microservices-config-service**
-- kong api infrastructure: **postgreSQL**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-konga-dashboard**
+- kong api infrastructure: **postgreSQL**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
 - business microservices:
   - k8s discovery service dependency for microservices registration and discovery
   - **k8s-kafka-avro-kong-bs-ms-address**
