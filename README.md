@@ -46,10 +46,9 @@
 - **postgreSQL db** docker image for persisting all kong configurations made with konga-dashboard
 
 # unit tests and deploment
-- each code unit of business microservices is tested with **JUnit5** and **AssertJ**.
+- each code unit of business microservices is tested with **JUnit5**
 - **Mockito** is used to mock external unit dependency.
-- **KafkaContainer** is used  to mock Kafka  containers producer/consumer.
-      - [Testcontainers for Java](https://java.testcontainers.org/modules/kafka/).
+- i use **KafkaContainer** to mock Kafka objects containers (producer/consumer). see doc [Testcontainers for Java](https://java.testcontainers.org/modules/kafka/).
 - each service (business and utility microservice) is deployed in docker image.
 - a docker-compose template is used to deploy all images of the application.
 - Jenkins is used for continuous integrataion and deployment (CI/CD). After each git commit, Jenkins launch automatically following jobs:
