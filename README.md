@@ -1,14 +1,11 @@
 # Application base microservices (suite2)
+application base microservices that manage addresses, employees, companies and projects. each business microservices of the application is implemented into **clean architecture**.  
+each writing event is published and distributed using **kafka infrastructure**. **avro** and **schema-registry** are used to serialize kafka events.  
+kong-api-gateway to be the bridge between http users and backend services. konga-dashboard to manager Kong objects  .
+
 (NEW) in this project, we replace gateway Api **Spring-Cloud-Gateway** by **Kong Api Gateway**  
 (NEW) we configure in the kong-api-gateway: **routing**, **rate-limiting**, **authentication**, **logging**, **etc.**  
 (NEW) we add konga-dashboard manage kong objects
-
-application base microservices that manage addresses, employees, companies and projects.  
-each business microservices of the application is implemented into **clean architecture**.  
-each writing event is published and distributed using **kafka infrastructure**.  
-**avro** and **schema-registry** are used to serialize kafka events.  
-kong-api-gateway to be the bridge between http users and backend services.  
-konga-dashboard to manager Kong objects  .
 
 Application is divided into two part: 
 - business microservices: define the business code, the functionnality of the application
