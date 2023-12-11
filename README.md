@@ -52,9 +52,9 @@ the whole application is divided into two part:
   - test all code units of all business microservices and published a report of tests: **mvn test**, **junit '/target/surefire-reports/TEST-*.xml**
   - build a docker image of each microservice refering to a dockerfile defined inside microservice: **sh 'docker compose -f compose-file.yaml build'**
   - publish docker images in docker registry: 
-    - create credentials into Jenkins: dashboard>Manage Jenkins>credentials: under global add new credential
+    - create Jenkins credentials: dashboard>Manage Jenkins>credentials: under global add new credential
     - take docker username and token from your dockerhub and add them respectively in username and password fields of the displayed form
-    - add in the ID field, add the id of your credentials
+    - add in the ID field the id of your credentials
     - in Jenkins pipeline, add the docker publish stage 
     ```
     stage ('Publish appli stack docker images') {
@@ -68,8 +68,10 @@ the whole application is divided into two part:
             }
         }
     ```
-    
-    
+     
+## summary (CI-DC)
+![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/dcf3f67e-4330-4563-91d5-947703e92ade)
+
  # Docker images deploy
  All the services of the application are deployed into docker images: 
 - kafka infrastructure: zookeeper, kafka-server, schema-regisrry, kafdrop-ui
@@ -88,10 +90,6 @@ all the docker containers of the application are deployed into a **K8s minikube 
 - the folder **Kubernetes-Container-Orch** contains k8s deployments of all containers of the application.
 - in the first time, **kong-api-geteway** is deployed in declarative mode:**kong-api-gateway-declarative-mode.yaml**
 - all k8s deployment (pods) are exposed by **k8s-services**
- 
-# summary (CI-DC)
-![my-ci-cd-flow](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/dcf3f67e-4330-4563-91d5-947703e92ade)
-
     
 # architecture kafka inside business microservice
 - a model is a java bean that is sent as payload using a REST api, 
