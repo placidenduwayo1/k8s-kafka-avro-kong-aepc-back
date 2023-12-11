@@ -124,7 +124,7 @@ kong-api-gateway url: **http://192.168.49.2:30800/**
 
   ## address-microservice
 
-list of exposed endpoints by **k8s-kafka-avro-kong-bs-ms-address**:  
+list of exposed endpoints by **k8s-kafka-avro-kong-bs-ms-address** pod:  
   - [GET]```http://192.168.49.2:30800/address-api/```  
   - [POST]```http://192.168.49.2:30800/addresses```    
     ***payload***:  
@@ -153,7 +153,7 @@ list of exposed endpoints by **k8s-kafka-avro-kong-bs-ms-address**:
         }
         ```  
 ## company-microservice
-list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-company pod:  
+list of exposed endpoints by **k8s-kafka-avro-kong-bs-ms-company** pod:  
   - [GET] ```http://http://192.168.49.2:30800/company-api/```  
   - [POST]```http://192.168.49.2:30800/company-api/companies```  
       ***payload***:
@@ -185,7 +185,7 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-company pod:
     ```  
   **Note**: cannot update company on address holding another company  
 ## employee-microservice 
-list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-employee pod:  
+list of exposed endpoints by **k8s-kafka-avro-kong-bs-ms-employee** pod:  
   - [GET] ```http://192.168.49.2:30800/employee-api/```  
   - [POST]```http://192.168.49.2:30800/employee-api/employees```  
   ***payload***:  
@@ -219,7 +219,7 @@ list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-employee pod:
 
 **Note:** for [POST] and [PUT], ***address-id***, employee ms sends request to address ms to ask address related to address-id. a resilience is managed if address ms is down
 ## project-microservice
-list of **endpoints** exposed by k8s-kafka-avro-kong-bs-ms-project pod:  
+list of exposed endpoints by **k8s-kafka-avro-kong-bs-ms-project** pod:  
   - [GET] ```http://192.168.49.2:30800/project-api/``  
   - [POST]```http://192.168.49.2:30800/project-api/projects```    
   ***payload:***  
