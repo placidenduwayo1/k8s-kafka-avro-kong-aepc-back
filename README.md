@@ -21,16 +21,7 @@
 ## 1. configuration server
 **microservices-config-service**: to centralize and distribute all microservices configurations
 
-## 2. kong-API-Gateway
-- **kong-API-Gateway** as unique entry point to backend microservices. 
-- kong-API-gateway in declarative mode, the docker-compose file for images deployment is located under **Kong-Gateway-DBLess-Docker**. **kong.yaml** file of all Kong objects is defined under **Kong-Gateway-Config-DBLess** folder: **routing**, **rate-limiting**, **authentication** (basic-auth, jwt), **logging**. 
-- when using UI for managing kong objects, we deploy **konga-dashboard**: 
-  - all configuratons created declarative mode, are done using konga-ui
-  - under **Kong-Gateway-Postgres-Konga-Docker** folder is docker-compose file for deploying kong infrastructure:
-    - **postgress db**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
-- Under **Logs** folder is a logs file **logs-file.log** that logs all hppt request torwards backend microservices
-
-## 3. kafka infrastructure
+## 2. kafka infrastructure
 - a kafka infrastructure to publish and distribute events.
 - each writing event in database (POST, DELETE, UPDATE) is distributed into kafka topics.
 - **schema registry** to difine schema for all events and **avro** to serialiaze events sent to topics
@@ -42,7 +33,16 @@
   - **avro schema**:to serialize kafka events
   - **kafdrop**: a kafka UI
 
-## 3. databases
+## 3. kong-API-Gateway
+- **kong-API-Gateway** as unique entry point to backend microservices. 
+- kong-API-gateway in declarative mode, the docker-compose file for images deployment is located under **Kong-Gateway-DBLess-Docker**. **kong.yaml** file of all Kong objects is defined under **Kong-Gateway-Config-DBLess** folder: **routing**, **rate-limiting**, **authentication** (basic-auth, jwt), **logging**. 
+- when using UI for managing kong objects, we deploy **konga-dashboard**: 
+  - all configuratons created declarative mode, are done using konga-ui
+  - under **Kong-Gateway-Postgres-Konga-Docker** folder is docker-compose file for deploying kong infrastructure:
+    - **postgress db**, **kong-db-prepare**, **kong-api-gateway**, **konga-db-prepare**, **konga-dashboard**
+- Under **Logs** folder is a logs file **logs-file.log** that logs all hppt request torwards backend microservices
+
+## 4. databases
 - **mysql db** docker image for peristing data from business microservices
 - **postgreSQL db** docker image for persisting all kong configurations made with Konga-UI
 
