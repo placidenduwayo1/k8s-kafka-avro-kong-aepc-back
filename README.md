@@ -1,21 +1,21 @@
 # Application base microservices (suite2)
 - application base microservices to manage addresses, employees, companies and projects microservices. each business microservices is implemented into **clean architecture**.  
 - writing events distributed using **kafka infrastructure**. **avro**, **schema-registry** to serialize kafka events.  
-- kong-api-gateway between front and back services. konga-dashboard to manager kong objects  .
+- kong-api-gateway between front and back services. konga-dashboard to manager kong objects.
 
-(NEW) in this project, we replace gateway Api **Spring-Cloud-Gateway** by **Kong Api Gateway**  
-(NEW) we configure in the kong-api-gateway: **routing**, **rate-limiting**, **authentication**, **logging**, **etc.**  
-(NEW) we add konga-dashboard manage kong objects
+(NEW) in this project, we replace api gateway **Spring-Cloud-Gateway** by **kong-api-gateway**  
+(NEW) we configure plugis in the kong-api-gateway : **routing**, **rate-limiting**, **authentication**, **logging**, **CORS**,**proxy-cache**,**ip-restrictions**  
+(NEW) we add konga-dashboard to manage kong objects
 
-Application is divided into two part: 
+the whole application is divided into two part: 
 - business microservices: define the business code, the functionnality of the application
 - utility services: serving business microservices for a good interoperability
 
 ## business microservices
-- Address-microservice 
-- Employee-microservice 
-- company-microservice
-- Project-microservice
+- address
+- employee
+- company
+- project
 
 # utility services
 
@@ -23,16 +23,13 @@ Application is divided into two part:
 **microservices-config-service**: to centralize and distribute all microservices configurations into a git repository
 
 ## 2. kafka infrastructure
-- a kafka infrastructure to publish and distribute events.
-- each writing event in database (POST, DELETE, UPDATE) is distributed into kafka topics.
-- **schema registry** to difine schema for all events and **avro** to serialiaze events sent to topics
-- **kafdrop** is used as ui for managing and exploring kafka events, kafka servers,...
-- kafka infrastructure:
-  - **zookeeper**: to manage kafka brokers
-  - **kafka-servers (3 brokers)**, **kafka-broker-1**, **kafka-broker-2**, **kafka-broker-3**: publish events into topics and disbribute events to consumers
-  - **schema registry**: defines and register a common schema of the all events
-  - **avro schema**: serializes kafka events
-  - **kafdrop**: a kafka ui to manage kafka topics and events
+a kafka infrastructure to publish and distribute events.each writing event in db (POST, DELETE, UPDATE) is distributed into kafka topics. **schema-registry** difines common schema for all events and **avro-schema** serialiazes those events. **kafdrop** is used as ui for managing and exploring kafka servers, topics, events.
+- kafka infra:
+  - **zookeeper**: to manage kafka servers (brokers)
+  - **3 kafka-servers**: **kafka-broker-1**, **kafka-broker-2**, **kafka-broker-3**: publish events into topics and disbribute them to consumers
+  - **schema-registry**: defines and register a common schema of the all events
+  - **avro-schema**: serializes kafka events
+  - **kafdrop-ui**: a kafka ui to manage kafka topics and events
 
 ## 3. kong-API-Gateway
 - **kong-API-Gateway** is a unique entry point (proxy) to backend microservices. 
