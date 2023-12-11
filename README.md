@@ -29,6 +29,20 @@ the whole application is divided into two part:
 - **avro-schema**: serializes kafka events
 - **kafdrop-ui**: a ui to manage kafka topics and events
 
+## kafka architecture inside business microservices
+- a model is a java bean that is sent as payload using a REST api, 
+- a spring service build a kafka message with java model,
+- a spring service uses kafka producer to send the kafka message to kafka topic,
+- a spring service uses kafka consumer to subscribe to the kafka topic and consumes events that it sends to another spring service,
+- the final spring service can handle received event as it wants, either to persist it in db or do anything with it.
+## kafka infra summary
+![kafka-infrastructure](https://github.com/placidenduwayo1/k8s-kafka-avro-aepc-back/assets/124048212/4cb3738e-718a-466c-9b59-41d4773a1a0b)
+
+- a schema registry defines a schema for all events to publish into kafka topics,
+- avro-schema uses that defined and registered schema to serialize avents,
+- after events serialized, kafka producer send them into kafka topics.
+
+
 ## 3. kong-api-Gateway
 - **kong-api-Gateway**: a unique entry point (proxy) to backend microservices. 
 - in declarative mode, kong-api-gateway is deployed using docker and docker-compose file (under **Kong-Gateway-DBLess-Docker** folder) and a configuration fle **kong.yaml** (under **Kong-Gateway-Config-DBLess** folder) of all kong objects : **routing**, **rate-limiting**, **authentication** (basic-auth, jwt), **logging**, **consumers**, **credentials**. 
@@ -85,26 +99,10 @@ the whole application is divided into two part:
   - k8s-kafka-avro-kong-bs-ms-project
 
 # K8s docker container deploy
-
 all the docker containers of the application are deployed into a **K8s minikube cluster**.
 - the folder **Kubernetes-Container-Orch** contains k8s deployments of all containers of the application.
 - in the first time, **kong-api-geteway** is deployed in declarative mode:**kong-api-gateway-declarative-mode.yaml**
 - all k8s deployment (pods) are exposed by **k8s-services**
-    
-# architecture kafka inside business microservice
-- a model is a java bean that is sent as payload using a REST api, 
-- a spring service build a kafka message with java model,
-- a spring service uses kafka producer to send the kafka message to kafka topic,
-- a spring service uses kafka consumer to subscribe to the kafka topic and consumes events that it sends to another spring service,
-- the final spring service can handle received event as it wants, either to persist it in db or do anything with it.
-
-
-# kafka infra summary
-![kafka-infrastructure](https://github.com/placidenduwayo1/k8s-kafka-avro-aepc-back/assets/124048212/4cb3738e-718a-466c-9b59-41d4773a1a0b)
-
-- a schema registry defines a schema for all events to publish into kafka topics,
-- avro-schema uses that defined and registered schema to serialize avents,
-- after events serialized, kafka producer send them into kafka topics.
 
 # global architecture of the project
 ![k8s-kafka-avro-kong-clean-archi](https://github.com/placidenduwayo1/k8s-kafka-avro-kong-back/assets/124048212/4107499e-7894-4240-998c-b2c8e144751d)
