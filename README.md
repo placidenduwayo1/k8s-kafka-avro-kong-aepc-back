@@ -3,9 +3,10 @@
 - writing events distributed using **kafka infrastructure**. **avro**, **schema-registry** to serialize kafka events.  
 - kong-api-gateway between front and back services. konga-dashboard to manager kong objects.
 
-(NEW) in this project, we replace api gateway **Spring-Cloud-Gateway** by **kong-api-gateway**  
-(NEW) we configure plugis in the kong-api-gateway : **routing**, **rate-limiting**, **authentication**, **logging**, **cors**,**proxy-cache**,**ip-restrictions**  
-(NEW) we add konga-dashboard to manage kong objects
+(**NEW**) in this project, we replace api gateway **Spring-Cloud-Gateway** by **kong-api-gateway**  
+(**NEW**) i configure plugis in the kong-api-gateway : **routing**, **rate-limiting**, **authentication**, **logging**, **cors**,**proxy-cache**,**ip-restrictions**  
+(**NEW**) i add konga-dashboard to manage kong objects
+(**NEW**) i add Nginx Ingress controller to expose k8s LoadBalancer Services
 
 the whole application is divided into two part: 
 - business microservices: define the business code, the functionnality of the application
@@ -137,11 +138,11 @@ list of exposed endpoints by **k8s-kafka-avro-kong-bs-ms-address** pod:
         coutry: string value
       }
       ```  
-    - [GET]```http://192.168.49.2:30800/address-api/addresses```  
-    - [GET]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
-    - [DELETE]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
-    **Note**: address cannot be removed when it is aleardy assigned  employee or company   
-    - [PUT]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
+  - [GET]```http://192.168.49.2:30800/address-api/addresses```  
+  - [GET]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
+  - [DELETE]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
+  **Note**: address cannot be removed when it is aleardy assigned  employee or company   
+  - [PUT]```http://192.168.49.2:30800/address-api/addresses/id/{value of address id}```  
       ***payload***:  
         ```
         {
