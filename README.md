@@ -122,6 +122,8 @@ all the docker containers of the application are deployed into a **K8s minikube 
 - after deploying into k8s cluster the kong-api-gateway in declarative mode, we access to endpoints via kong api gateway as follows:
 
 kong-api-gateway url: **http://192.168.49.2:30800/**
+- **19.168.49.2** is the ip address for minikube cluster. To get it run **>minikube ip -p cluster_name**
+- **30800** is the nodePort affected to k8s **kong-proxy-service**: ./Kubernetes-Container-Orch/6k8s-kong-dbless/k8s-kong-gateway-declarative-mode.yaml 
 
   ## address-microservice
 
