@@ -28,7 +28,6 @@ spec:
           ports:
             - containerPort: 9092
               name: broker1-port
-              hostPort: 9092
           startupProbe:
             tcpSocket:
               port: broker1-port
@@ -92,4 +91,4 @@ spec:
       name: broker1-port
       targetPort: 9092
       nodePort: 30092
-  type: NodePort
+  type: ClusterIP

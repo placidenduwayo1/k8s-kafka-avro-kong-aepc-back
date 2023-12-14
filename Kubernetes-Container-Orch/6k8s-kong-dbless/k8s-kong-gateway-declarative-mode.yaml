@@ -91,13 +91,10 @@ spec:
           ports:
             - name: http-proxy
               containerPort: 8000
-              hostPort: 8000
             - name: https-proxy
               containerPort: 8443
-              hostPort: 8443
             - name: http-admin
               containerPort: 8001
-              hostPort: 8001
             - name: https-admin
               containerPort: 8444
           volumeMounts:

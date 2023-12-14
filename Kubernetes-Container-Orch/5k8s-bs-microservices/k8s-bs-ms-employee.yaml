@@ -54,7 +54,6 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8683
-              hostPort: 8683
               name: ms-employ-port
           startupProbe:
             httpGet:

@@ -54,7 +54,6 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8684
-              hostPort: 8684
               name: ms-project-port
           env:
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
